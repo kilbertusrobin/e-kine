@@ -1,0 +1,34 @@
+meta {
+  name: Logout
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/auth/logout
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "refreshToken": "{{refreshToken}}"
+  }
+}
+
+docs {
+  # Logout
+
+  Déconnecte l'utilisateur en supprimant la session associée au refresh token.
+
+  **Authentication:** Bearer Token (JWT)
+
+  **Body:**
+  - `refreshToken` (string): Le refresh token de la session à supprimer
+
+  **Response:** 204 No Content
+}

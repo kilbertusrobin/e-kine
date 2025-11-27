@@ -1,0 +1,33 @@
+meta {
+  name: Get Profile by ID
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/profiles/:id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id:
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+docs {
+  # Get Profile by ID
+
+  Récupère un profil spécifique par son ID.
+
+  **Authentication:** Bearer Token (JWT)
+
+  **Path Parameters:**
+  - `id` (string): UUID du profil
+
+  **Response:**
+  - Objet Profile avec toutes les informations
+}

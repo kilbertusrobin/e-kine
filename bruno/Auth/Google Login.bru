@@ -1,0 +1,22 @@
+meta {
+  name: Google Login
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/auth/google
+  body: none
+  auth: none
+}
+
+docs {
+  # Google OAuth Login
+
+  Déclenche le flux d'authentification Google OAuth.
+  Cette route redirige vers Google pour l'authentification.
+
+  **Note:** Cette route est conçue pour être utilisée dans un navigateur.
+  Après authentification réussie, l'utilisateur sera redirigé vers le frontend
+  avec les tokens dans l'URL.
+}

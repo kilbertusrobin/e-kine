@@ -1,0 +1,22 @@
+meta {
+  name: Health Check
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/health
+  body: none
+  auth: none
+}
+
+docs {
+  # Health Check
+
+  Endpoint dédié pour vérifier l'état de santé de l'API.
+
+  **Authentication:** None
+
+  **Response:**
+  - Statut de l'API
+}

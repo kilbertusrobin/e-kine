@@ -1,0 +1,26 @@
+meta {
+  name: Get Current User
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/auth/me
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+docs {
+  # Get Current User
+
+  Récupère les informations de l'utilisateur actuellement authentifié.
+
+  **Authentication:** Bearer Token (JWT)
+
+  **Response:**
+  - Objet User complet avec profil
+}

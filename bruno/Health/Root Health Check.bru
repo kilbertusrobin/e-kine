@@ -1,0 +1,22 @@
+meta {
+  name: Root Health Check
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/
+  body: none
+  auth: none
+}
+
+docs {
+  # Root Health Check
+
+  Vérifie que l'API est en ligne.
+
+  **Authentication:** None
+
+  **Response:**
+  - Message de bienvenue
+}
