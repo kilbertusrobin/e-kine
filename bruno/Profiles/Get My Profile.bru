@@ -1,0 +1,36 @@
+meta {
+  name: Get My Profile
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/profiles/me
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+docs {
+  # Get My Profile
+
+  Récupère le profil de l'utilisateur actuellement authentifié.
+
+  **Authentication:** Bearer Token (JWT)
+
+  **Response:**
+  - `id` (string): ID du profil
+  - `lastName` (string | null): Nom de famille
+  - `firstName` (string | null): Prénom
+  - `address` (string | null): Adresse
+  - `city` (string | null): Ville
+  - `pc` (string | null): Code postal
+  - `phone` (string | null): Téléphone
+  - `userId` (string): ID de l'utilisateur
+  - `createdAt` (Date): Date de création
+  - `updatedAt` (Date): Date de mise à jour
+  - `isComplete` (boolean): Indique si le profil est complet
+}

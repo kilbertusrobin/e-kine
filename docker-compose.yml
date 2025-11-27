@@ -40,6 +40,7 @@ services:
     container_name: kine-backend
     restart: unless-stopped
     environment:
+      NODE_ENV: development
       PORT: 3001
       DATABASE_HOST: postgres
       DATABASE_PORT: 5432
@@ -47,6 +48,14 @@ services:
       DATABASE_PASSWORD: kine_password
       DATABASE_NAME: kine_booking
       FRONTEND_URL: http://localhost
+      # JWT Configuration (depuis .env)
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
+      JWT_REFRESH_EXPIRES_IN: ${JWT_REFRESH_EXPIRES_IN}
+      # Google OAuth (depuis .env)
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      GOOGLE_CALLBACK_URL: http://localhost:3001/auth/google/callback
     ports:
       - "3001:3001"
     depends_on:

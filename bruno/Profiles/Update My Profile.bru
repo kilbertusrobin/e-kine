@@ -1,0 +1,45 @@
+meta {
+  name: Update My Profile
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{baseUrl}}/profiles/me
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "lastName": "Dupont",
+    "firstName": "Jean",
+    "address": "123 Rue de la Paix",
+    "city": "Paris",
+    "pc": "75001",
+    "phone": "0612345678"
+  }
+}
+
+docs {
+  # Update My Profile
+
+  Met à jour le profil de l'utilisateur actuellement authentifié.
+
+  **Authentication:** Bearer Token (JWT)
+
+  **Body:** (tous les champs sont optionnels)
+  - `lastName` (string): Nom de famille
+  - `firstName` (string): Prénom
+  - `address` (string): Adresse
+  - `city` (string): Ville
+  - `pc` (string): Code postal (max 10 caractères)
+  - `phone` (string): Téléphone (max 20 caractères)
+
+  **Response:**
+  - Objet Profile mis à jour
+}

@@ -1,0 +1,40 @@
+meta {
+  name: Refresh Token
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/auth/refresh
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "refreshToken": "{{refreshToken}}"
+  }
+}
+
+docs {
+  # Refresh Access Token
+
+  Rafraîchit l'access token en utilisant le refresh token.
+
+  **Body:**
+  - `refreshToken` (string): Le refresh token obtenu lors de la connexion
+
+  **Response:**
+  - `accessToken` (string): Nouveau JWT access token
+  - `refreshToken` (string): Nouveau refresh token
+  - `tokenType` (string): "Bearer"
+  - `expiresIn` (number): Durée de validité en secondes
+  - `user` (object): Informations de l'utilisateur avec profil
+}
+
+script:post-response {
+  if (res.status === 200) {
+    bru.setVar("accessToken", res.body.accessToken);
+    bru.setVar("refreshToken", res.body.refreshToken);
+  }
+}

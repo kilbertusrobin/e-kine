@@ -1,0 +1,34 @@
+meta {
+  name: Delete Profile by ID
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{baseUrl}}/profiles/:id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id:
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+docs {
+  # Delete Profile by ID
+
+  Supprime un profil spécifique par son ID.
+
+  **Authentication:** Bearer Token (JWT)
+
+  **Path Parameters:**
+  - `id` (string): UUID du profil
+
+  **Response:** 204 No Content
+
+  **Note:** La suppression d'un profil ne supprime pas l'utilisateur associé.
+}

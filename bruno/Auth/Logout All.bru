@@ -1,0 +1,26 @@
+meta {
+  name: Logout All
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/auth/logout-all
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+docs {
+  # Logout All Sessions
+
+  Déconnecte l'utilisateur de toutes ses sessions actives.
+  Supprime tous les refresh tokens associés à l'utilisateur.
+
+  **Authentication:** Bearer Token (JWT)
+
+  **Response:** 204 No Content
+}

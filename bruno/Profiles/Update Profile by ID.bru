@@ -1,0 +1,48 @@
+meta {
+  name: Update Profile by ID
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{baseUrl}}/profiles/:id
+  body: json
+  auth: bearer
+}
+
+params:path {
+  id:
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "lastName": "Martin",
+    "firstName": "Marie"
+  }
+}
+
+docs {
+  # Update Profile by ID
+
+  Met à jour un profil spécifique par son ID.
+
+  **Authentication:** Bearer Token (JWT)
+
+  **Path Parameters:**
+  - `id` (string): UUID du profil
+
+  **Body:** (tous les champs sont optionnels)
+  - `lastName` (string): Nom de famille
+  - `firstName` (string): Prénom
+  - `address` (string): Adresse
+  - `city` (string): Ville
+  - `pc` (string): Code postal
+  - `phone` (string): Téléphone
+
+  **Response:**
+  - Objet Profile mis à jour
+}

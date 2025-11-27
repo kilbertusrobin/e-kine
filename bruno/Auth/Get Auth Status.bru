@@ -1,0 +1,28 @@
+meta {
+  name: Get Auth Status
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/auth/status
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+docs {
+  # Get Authentication Status
+
+  Vérifie le statut d'authentification de l'utilisateur.
+
+  **Authentication:** Bearer Token (JWT)
+
+  **Response:**
+  - `authenticated` (boolean): true si authentifié
+  - `role` (string): "patient" ou "practitioner"
+  - `canLogin` (boolean): Indique si le compte peut se connecter
+}
