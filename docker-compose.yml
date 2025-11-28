@@ -7,9 +7,9 @@ services:
     container_name: kine-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_USER: kine_user
-      POSTGRES_PASSWORD: kine_password
-      POSTGRES_DB: kine_booking
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "5432:5432"
     volumes:
@@ -23,8 +23,8 @@ services:
     container_name: kine-pgadmin
     restart: unless-stopped
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@kine.com
-      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
     ports:
       - "5050:80"
     depends_on:
@@ -41,12 +41,12 @@ services:
     restart: unless-stopped
     environment:
       NODE_ENV: development
-      PORT: 3001
+      PORT: ${BACKEND_PORT}
       DATABASE_HOST: postgres
       DATABASE_PORT: 5432
-      DATABASE_USER: kine_user
-      DATABASE_PASSWORD: kine_password
-      DATABASE_NAME: kine_booking
+      DATABASE_USER: ${POSTGRES_USER}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
+      DATABASE_NAME: ${POSTGRES_DB}
       FRONTEND_URL: http://localhost
       # JWT Configuration (depuis .env)
       JWT_SECRET: ${JWT_SECRET}
@@ -57,21 +57,24 @@ services:
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
       GOOGLE_CALLBACK_URL: http://localhost:3001/auth/google/callback
     ports:
-      - "3001:3001"
+      - "${BACKEND_PORT}:${BACKEND_PORT}"
     depends_on:
       - postgres
     networks:
       - kine-network
 
-  # Frontend (Vite + React)
+  # Frontend (Vite + React) - Mode dev ou prod selon NODE_ENV
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.${NODE_ENV:-production}
     container_name: kine-frontend
     restart: unless-stopped
     ports:
-      - "80:80"
+      - "${FRONTEND_PORT_DEV}:5173"  # Dev mode
+      - "${FRONTEND_PORT_PROD}:80"   # Prod mode
+    environment:
+      - VITE_API_URL=http://localhost:${BACKEND_PORT}
     depends_on:
       - backend
     networks:

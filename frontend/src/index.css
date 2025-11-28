@@ -1,3 +1,42 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    /* Couleurs principales */
+    --color-primary: 37 99 235; /* primary-600 */
+    --color-primary-hover: 29 78 216; /* primary-700 */
+
+    /* Couleurs secondaires */
+    --color-secondary: 8 145 178; /* secondary-600 */
+    --color-accent: 79 70 229; /* accent-600 */
+
+    /* Backgrounds */
+    --bg-page-login: linear-gradient(to bottom right, #fafafa, #f5f5f5);
+    --bg-page-register: linear-gradient(to bottom right, #eef2ff, #dbeafe, #ecfeff);
+
+    /* Panneaux visuels */
+    --bg-panel-login: linear-gradient(to bottom right, #3b82f6, #2563eb);
+    --bg-panel-register: linear-gradient(to bottom right, #6366f1, #3b82f6, #06b6d4);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Offset pour le header sticky */
+  section[id] {
+    scroll-margin-top: 80px;
+  }
+}
+
+@layer utilities {
+  .bg-page-login {
+    background: linear-gradient(to bottom right, #fafafa, #f5f5f5);
+  }
+
+  .bg-page-register {
+    background: linear-gradient(to bottom right, #eef2ff, #dbeafe, #ecfeff);
+  }
+}
