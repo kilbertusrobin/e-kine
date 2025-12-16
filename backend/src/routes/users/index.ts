@@ -3,5 +3,5 @@
  */
 export * from './users.module';
 export * from './entities';
-export * from './dto';
+export * from './dtos';
 export * from './enums';

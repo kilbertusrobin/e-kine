@@ -11,7 +11,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { ProfilesService } from './profiles.service';
-import { CreateProfileDto, UpdateProfileDto } from './dto';
+import { CreateProfileDto, UpdateProfileDto } from './dtos';
 import { JwtAuthGuard } from '../auth/guards';
 import { CurrentUser } from '../auth/decorators';
 import { User } from '../users/entities/user.entity';
