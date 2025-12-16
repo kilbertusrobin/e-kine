@@ -12,10 +12,10 @@ import { User } from '../users/entities/user.entity';
 import { Profile } from '../profiles/entities/profile.entity';
 import { UserRole } from '../users/enums/user-role.enum';
 import { SessionsService } from '../sessions/sessions.service';
-import { AuthResponseDto } from './dto';
+import { AuthResponseDto } from './dtos';
 import { plainToInstance } from 'class-transformer';
-import { UserResponseDto } from '../users/dto';
-import { isPractitionerEmail } from '../config/practitioner-whitelist.config';
+import { UserResponseDto } from '../users/dtos';
+import { isPractitionerEmail } from '../../config/practitioner-whitelist.config';
 
 /**
  * Service d'authentification

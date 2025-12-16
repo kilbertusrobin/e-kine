@@ -1,6 +1,6 @@
 import { Exclude, Expose, Type } from 'class-transformer';
 import { UserRole } from '../enums/user-role.enum';
-import { ProfileResponseDto } from '../../profiles/dto';
+import { ProfileResponseDto } from '../../profiles/dtos';
 
 /**
  * DTO pour les réponses API contenant un utilisateur

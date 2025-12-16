@@ -1,4 +1,4 @@
-import { UserResponseDto } from '../../users/dto';
+import { UserResponseDto } from '../../users/dtos';
 
 /**
  * DTO pour la réponse d'authentification

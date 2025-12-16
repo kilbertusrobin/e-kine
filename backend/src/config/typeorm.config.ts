@@ -1,7 +1,7 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { User } from '../users/entities/user.entity';
-import { Session } from '../sessions/entities/session.entity';
-import { Profile } from '../profiles/entities/profile.entity';
+import { User } from '../routes/users/entities/user.entity';
+import { Session } from '../routes/sessions/entities/session.entity';
+import { Profile } from '../routes/profiles/entities/profile.entity';
 
 /**
  * Configuration TypeORM pour PostgreSQL
