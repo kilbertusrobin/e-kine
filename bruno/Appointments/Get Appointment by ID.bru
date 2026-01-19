@@ -1,0 +1,32 @@
+meta {
+  name: Get Appointment by ID
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/appointments/:id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: uuid-du-rdv
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+docs {
+  # Get Appointment by ID
+
+  Récupère un rendez-vous par son ID.
+
+  **Authentication:** Bearer Token (JWT)
+
+  **Path Parameters:**
+  - `id` (string): UUID du rendez-vous
+
+  **Response:** Appointment avec relations (practitioner, patient, careType)
+}

@@ -1,0 +1,20 @@
+meta {
+  name: Get My Prescriptions
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/prescriptions/me
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+docs {
+  Récupère toutes les ordonnances de l'utilisateur authentifié.
+  Retourne les ordonnances triées par date de création (plus récentes en premier).
+}

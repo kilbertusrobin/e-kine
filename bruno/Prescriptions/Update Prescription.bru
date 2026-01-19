@@ -1,0 +1,33 @@
+meta {
+  name: Update Prescription
+  type: http
+  seq: 5
+}
+
+put {
+  url: {{baseUrl}}/prescriptions/:id
+  body: multipartForm
+  auth: bearer
+}
+
+params:path {
+  id:
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:multipart-form {
+  file: @file(/path/to/new_prescription.pdf)
+}
+
+docs {
+  Met à jour une ordonnance existante avec un nouveau fichier PDF.
+  Le nouveau fichier remplace complètement l'ancien.
+
+  Validations:
+  - Type: Seuls les PDF sont acceptés
+  - Taille max: 10 MB
+  - Extension: .pdf
+}

@@ -62,10 +62,25 @@ services:
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
       GOOGLE_CALLBACK_URL: http://localhost:3001/auth/google/callback
+      # Mail Configuration
+      MAIL_HOST: mailpit
+      MAIL_PORT: 1025
+      MAIL_FROM: noreply@e-kine.fr
     ports:
       - "3001:3001"
     depends_on:
       - postgres
+    networks:
+      - kine-network
+
+  # Mailpit (serveur mail de développement)
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: kine-mailpit
+    restart: unless-stopped
+    ports:
+      - "8025:8025"  # Interface web
+      - "1025:1025"  # SMTP
     networks:
       - kine-network
 

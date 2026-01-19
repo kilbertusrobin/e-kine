@@ -1,0 +1,29 @@
+meta {
+  name: Create Prescription
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/prescriptions
+  body: multipartForm
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwNzE3OTkwMy04Y2Q4LTQ4MzAtOTA0Yy02ODY3MDI2OTBlZWMiLCJlbWFpbCI6InJieC5mYXlAZ21haWwuY29tIiwicm9sZSI6InByYWN0aXRpb25lciIsImlhdCI6MTc2ODgxMTk1MiwiZXhwIjoxNzY4ODE1NTUyfQ.NRn1GRfPNcHH6h9sMLz3n2j8HbZcPpReW4qZ8acrVIs
+}
+
+body:multipart-form {
+  file: @file(C:\Users\rbxfa\Downloads\documentation Apps V2.pdf)
+}
+
+docs {
+  Upload un fichier PDF qui sera converti en base64 et stocké.
+  L'ordonnance sera automatiquement associée à l'utilisateur authentifié.
+  
+  Validations:
+  - Type: Seuls les PDF sont acceptés
+  - Taille max: 10 MB
+  - Extension: .pdf
+}
