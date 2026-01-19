@@ -47,7 +47,7 @@ services:
       DATABASE_USER: ${POSTGRES_USER}
       DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
       DATABASE_NAME: ${POSTGRES_DB}
-      FRONTEND_URL: http://localhost
+      FRONTEND_URL: http://localhost:5173
       # JWT Configuration (depuis .env)
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}

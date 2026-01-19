@@ -32,20 +32,14 @@ export default function Header() {
             <a href="#a-propos" className="text-gray-600 hover:text-gray-900 transition-colors">
               À propos
             </a>
-            <a href="#tarifs" className="text-gray-600 hover:text-gray-900 transition-colors">
-              Tarifs
-            </a>
             <a href="#contact" className="text-gray-600 hover:text-gray-900 transition-colors">
               Contact
             </a>
           </nav>
 
-          <div className="flex items-center space-x-3">
-            <a href="/login" className="text-gray-700 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium">
+          <div className="flex items-center">
+            <a href="/login" className="bg-primary-600 text-white px-5 py-2 rounded-lg hover:bg-primary-700 transition-colors font-medium shadow-sm hover:shadow-md">
               Connexion
-            </a>
-            <a href="/register" className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors font-medium">
-              Créer un compte
             </a>
           </div>
         </div>
