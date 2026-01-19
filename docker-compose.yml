@@ -23,10 +23,16 @@ services:
     container_name: kine-pgadmin
     restart: unless-stopped
     environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+      PGADMIN_DEFAULT_EMAIL: admin@kine.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_SERVER_JSON_FILE: /pgadmin4/servers.json
     ports:
       - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+      - ./pgadmin/servers.json:/pgadmin4/servers.json:ro
+      - ./pgadmin/pgpass:/pgpass:ro
     depends_on:
       - postgres
     networks:
@@ -56,10 +62,25 @@ services:
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
       GOOGLE_CALLBACK_URL: http://localhost:3001/auth/google/callback
+      # Mail Configuration
+      MAIL_HOST: mailpit
+      MAIL_PORT: 1025
+      MAIL_FROM: noreply@e-kine.fr
     ports:
       - "${BACKEND_PORT}:${BACKEND_PORT}"
     depends_on:
       - postgres
+    networks:
+      - kine-network
+
+  # Mailpit (serveur mail de développement)
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: kine-mailpit
+    restart: unless-stopped
+    ports:
+      - "8025:8025"  # Interface web
+      - "1025:1025"  # SMTP
     networks:
       - kine-network
 
@@ -82,6 +103,7 @@ services:
 
 volumes:
   postgres_data:
+  pgadmin_data:
 
 networks:
   kine-network:

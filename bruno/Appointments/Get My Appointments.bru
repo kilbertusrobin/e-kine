@@ -1,0 +1,27 @@
+meta {
+  name: Get My Appointments
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/appointments/me
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+docs {
+  # Get My Appointments
+
+  Récupère les rendez-vous de l'utilisateur authentifié.
+  - Si l'utilisateur est un patient: retourne ses RDV en tant que patient
+  - Si l'utilisateur est un praticien: retourne ses RDV en tant que praticien
+
+  **Authentication:** Bearer Token (JWT)
+
+  **Response:** Array de Appointment
+}

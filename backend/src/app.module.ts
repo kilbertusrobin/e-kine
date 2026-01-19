@@ -4,10 +4,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { typeOrmConfig } from './config/typeorm.config';
-import { UsersModule } from './users/users.module';
-import { AuthModule } from './auth/auth.module';
-import { SessionsModule } from './sessions/sessions.module';
-import { ProfilesModule } from './profiles/profiles.module';
+import { UsersModule } from './routes/users/users.module';
+import { AuthModule } from './routes/auth/auth.module';
+import { SessionsModule } from './routes/sessions/sessions.module';
+import { ProfilesModule } from './routes/profiles/profiles.module';
+import { PrescriptionsModule } from './routes/prescriptions/prescriptions.module';
+import { CareTypesModule } from './routes/care-types/care-types.module';
+import { AppointmentsModule } from './routes/appointments/appointments.module';
+import { SchedulerModule } from './routes/scheduler/scheduler.module';
 
 /**
  * Module principal de l'application
@@ -29,6 +33,10 @@ import { ProfilesModule } from './profiles/profiles.module';
     SessionsModule,
     AuthModule,
     ProfilesModule,
+    PrescriptionsModule,
+    CareTypesModule,
+    AppointmentsModule,
+    SchedulerModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,7 +1,10 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { User } from '../users/entities/user.entity';
-import { Session } from '../sessions/entities/session.entity';
-import { Profile } from '../profiles/entities/profile.entity';
+import { User } from '../routes/users/entities/user.entity';
+import { Session } from '../routes/sessions/entities/session.entity';
+import { Profile } from '../routes/profiles/entities/profile.entity';
+import { Prescription } from '../routes/prescriptions/entities/prescription.entity';
+import { CareType } from '../routes/care-types/entities/care-type.entity';
+import { Appointment } from '../routes/appointments/entities/appointment.entity';
 
 /**
  * Configuration TypeORM pour PostgreSQL
@@ -14,7 +17,7 @@ export const typeOrmConfig: TypeOrmModuleOptions = {
   username: process.env.DATABASE_USER || 'kine_user',
   password: process.env.DATABASE_PASSWORD || 'kine_password',
   database: process.env.DATABASE_NAME || 'kine_booking',
-  entities: [User, Session, Profile],
+  entities: [User, Session, Profile, Prescription, CareType, Appointment],
   synchronize: process.env.NODE_ENV !== 'production', // ⚠️ Ne pas utiliser en production
   logging: process.env.NODE_ENV === 'development',
   ssl: process.env.DATABASE_SSL === 'true' ? { rejectUnauthorized: false } : false,
