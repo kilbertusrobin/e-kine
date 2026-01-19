@@ -2,7 +2,6 @@ import {
   Controller,
   Get,
   Post,
-  Query,
   Req,
   Res,
   UseGuards,
@@ -10,18 +9,22 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiBody,
+  ApiExcludeEndpoint,
+} from '@nestjs/swagger';
 import type { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { GoogleAuthGuard, JwtAuthGuard } from './guards';
-import { UserRole } from '../users/enums/user-role.enum';
 import { CurrentUser } from './decorators';
 import { User } from '../users/entities/user.entity';
 import { ConfigService } from '@nestjs/config';
 
-/**
- * Controller d'authentification
- * Gère toutes les routes liées à l'authentification OAuth Google
- */
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -29,35 +32,23 @@ export class AuthController {
     private readonly configService: ConfigService,
   ) {}
 
-  /**
-   * GET /auth/google
-   * Déclenche l'authentification Google OAuth
-   * Le rôle est déterminé automatiquement selon l'email (whitelist)
-   */
   @Get('google')
   @UseGuards(GoogleAuthGuard)
+  @ApiOperation({ summary: 'Login Google', description: 'Redirige vers Google OAuth' })
+  @ApiResponse({ status: 302, description: 'Redirection vers Google' })
   async googleAuth() {
-    // Le guard GoogleAuthGuard redirige vers Google
-    // Cette méthode ne sera jamais appelée
+    // Le guard redirige vers Google
   }
 
-  /**
-   * GET /auth/google/callback
-   * Callback Google OAuth
-   * Gère l'inscription et la connexion
-   * Le rôle est déterminé automatiquement selon l'email
-   */
   @Get('google/callback')
   @UseGuards(GoogleAuthGuard)
+  @ApiExcludeEndpoint()
   async googleAuthCallback(@Req() req: Request, @Res() res: Response) {
     const googleUser = req.user as any;
-
-    // Récupère device info et IP
     const deviceInfo = req.headers['user-agent'];
     const ipAddress = req.ip;
 
     try {
-      // Authentifie/inscrit l'utilisateur (le rôle est déterminé automatiquement)
       const authResponse = await this.authService.handleGoogleAuth(
         {
           sub: googleUser.sub,
@@ -68,7 +59,6 @@ export class AuthController {
         ipAddress,
       );
 
-      // Redirige vers le frontend avec les tokens
       const frontendUrl = this.configService.get<string>('FRONTEND_URL');
       const redirectUrl = `${frontendUrl}/auth/callback?` +
         `accessToken=${authResponse.accessToken}&` +
@@ -77,61 +67,58 @@ export class AuthController {
 
       return res.redirect(redirectUrl);
     } catch (error) {
-      // En cas d'erreur, redirige vers le frontend avec le message d'erreur
       const frontendUrl = this.configService.get<string>('FRONTEND_URL');
       const errorMessage = encodeURIComponent(error.message);
       return res.redirect(`${frontendUrl}/auth/error?message=${errorMessage}`);
     }
   }
 
-  /**
-   * POST /auth/refresh
-   * Rafraîchit l'access token avec le refresh token
-   */
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Rafraîchir le token' })
+  @ApiBody({ schema: { properties: { refreshToken: { type: 'string' } } } })
+  @ApiResponse({ status: 200, description: 'Nouveau access token' })
+  @ApiResponse({ status: 401, description: 'Refresh token invalide' })
   async refresh(@Body('refreshToken') refreshToken: string) {
     return this.authService.refreshAccessToken(refreshToken);
   }
 
-  /**
-   * POST /auth/logout
-   * Déconnecte l'utilisateur (supprime la session)
-   */
   @Post('logout')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Déconnexion' })
+  @ApiBody({ schema: { properties: { refreshToken: { type: 'string' } } } })
+  @ApiResponse({ status: 204, description: 'Déconnecté' })
   async logout(@Body('refreshToken') refreshToken: string) {
     await this.authService.logout(refreshToken);
   }
 
-  /**
-   * POST /auth/logout-all
-   * Déconnecte l'utilisateur de toutes ses sessions
-   */
   @Post('logout-all')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Déconnexion de tous les appareils' })
+  @ApiResponse({ status: 204, description: 'Toutes les sessions supprimées' })
   async logoutAll(@CurrentUser() user: User) {
     await this.authService.logoutAll(user.id);
   }
 
-  /**
-   * GET /auth/me
-   * Récupère les informations de l'utilisateur authentifié
-   */
   @Get('me')
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Utilisateur connecté' })
+  @ApiResponse({ status: 200, description: 'Informations utilisateur' })
+  @ApiResponse({ status: 401, description: 'Non authentifié' })
   async getProfile(@CurrentUser() user: User) {
     return user;
   }
 
-  /**
-   * GET /auth/status
-   * Vérifie le statut d'authentification
-   */
   @Get('status')
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Statut d\'authentification' })
+  @ApiResponse({ status: 200, description: 'Statut' })
   async getStatus(@CurrentUser() user: User) {
     return {
       authenticated: true,
