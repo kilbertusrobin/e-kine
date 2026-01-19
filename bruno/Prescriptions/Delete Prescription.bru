@@ -1,0 +1,25 @@
+meta {
+  name: Delete Prescription
+  type: http
+  seq: 6
+}
+
+delete {
+  url: {{baseUrl}}/prescriptions/:id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id:
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+docs {
+  Supprime une ordonnance par son ID.
+  Cette action est irréversible.
+  Retourne un status 204 (No Content) en cas de succès.
+}

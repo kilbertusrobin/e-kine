@@ -8,6 +8,7 @@ import { UsersModule } from './routes/users/users.module';
 import { AuthModule } from './routes/auth/auth.module';
 import { SessionsModule } from './routes/sessions/sessions.module';
 import { ProfilesModule } from './routes/profiles/profiles.module';
+import { PrescriptionsModule } from './routes/prescriptions/prescriptions.module';
 
 /**
  * Module principal de l'application
@@ -29,6 +30,7 @@ import { ProfilesModule } from './routes/profiles/profiles.module';
     SessionsModule,
     AuthModule,
     ProfilesModule,
+    PrescriptionsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

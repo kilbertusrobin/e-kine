@@ -1,0 +1,29 @@
+meta {
+  name: Create Prescription
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/prescriptions
+  body: multipartForm
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:multipart-form {
+  file: @file(C:\Users\rbxfa\Downloads\Micro‑entreprise & IR — Atelier complet.pdf)
+}
+
+docs {
+  Upload un fichier PDF qui sera converti en base64 et stocké.
+  L'ordonnance sera automatiquement associée à l'utilisateur authentifié.
+  
+  Validations:
+  - Type: Seuls les PDF sont acceptés
+  - Taille max: 10 MB
+  - Extension: .pdf
+}
