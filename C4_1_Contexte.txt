@@ -1,0 +1,64 @@
+@startuml
+
+skinparam backgroundColor #FFFFFF
+
+title Diagramme C4 - Niveau 1 : Contexte Systeme\nPlateforme E-Kine - Cabinet de Kinesitherapie
+
+skinparam rectangle {
+  BackgroundColor #F5F5DC
+  BorderColor #000000
+  BorderThickness 2
+  roundCorner 15
+  shadowing true
+}
+
+skinparam person {
+  BackgroundColor #08427B
+  BorderColor #073B6F
+  FontColor #FFFFFF
+}
+
+skinparam database {
+  BackgroundColor #438DD5
+  BorderColor #3C7FC0
+  FontColor #FFFFFF
+}
+
+skinparam defaultFontSize 12
+
+' === ACTEURS EXTERNES ===
+
+person "**Patient**\n\n[Personne]\n\nUtilisateur souhaitant\nprendre rendez-vous\navec un kinesitherapeute\net gerer ses ordonnances" as patient #08427B
+
+person "**Kinesitherapeute**\n\n[Personne]\n\nPraticien gerant\nses rendez-vous,\nses disponibilites\net ses types de soins" as kine #08427B
+
+' === SYSTEME PRINCIPAL ===
+
+rectangle "**Plateforme E-Kine**\n\n[Systeme Logiciel]\n\nPermet aux patients de prendre\nrendez-vous en ligne avec des\nkinesitherapeutes, gerer leurs\nordonnances et recevoir des\nnotifications par email" as ekine #1168BD
+
+' === SYSTEMES EXTERNES ===
+
+rectangle "**Google OAuth 2.0**\n\n[Systeme Externe]\n\nFournit l'authentification\ndes utilisateurs via leur\ncompte Google" as google #999999
+
+rectangle "**Serveur SMTP**\n\n[Systeme Externe]\n\nEnvoie les emails de\nconfirmation, annulation\net rappels de rendez-vous\n(Mailpit en dev)" as smtp #999999
+
+' === RELATIONS ===
+
+patient --> ekine : "Prend rendez-vous,\nconsulte ses RDV,\nupload ordonnances\n[HTTPS]"
+
+kine --> ekine : "Gere ses disponibilites,\nconsulte ses RDV,\ndefini ses types de soins\n[HTTPS]"
+
+ekine --> google : "Authentifie les\nutilisateurs\n[OAuth 2.0 / HTTPS]"
+
+ekine --> smtp : "Envoie les\nnotifications email\n[SMTP]"
+
+' === LEGENDE ===
+
+legend right
+  |= Couleur |= Type |
+  | <#08427B> | Personne |
+  | <#1168BD> | Systeme E-Kine |
+  | <#999999> | Systeme Externe |
+endlegend
+
+@enduml
