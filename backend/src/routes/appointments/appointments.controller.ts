@@ -10,6 +10,14 @@ import {
   UseGuards,
   ParseUUIDPipe,
 } from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiQuery,
+  ApiParam,
+} from '@nestjs/swagger';
 import { AppointmentsService } from './appointments.service';
 import {
   CreateAppointmentDto,
@@ -22,19 +30,16 @@ import { JwtAuthGuard } from '../auth/guards';
 import { CurrentUser } from '../auth/decorators';
 import { User } from '../users/entities/user.entity';
 
-/**
- * Controller de gestion des rendez-vous
- */
+@ApiTags('Appointments')
 @Controller('appointments')
 export class AppointmentsController {
   constructor(private readonly appointmentsService: AppointmentsService) {}
 
-  /**
-   * GET /appointments/available-slots
-   * Récupère les créneaux disponibles pour un praticien à une date donnée
-   * Route publique (pour permettre la consultation avant connexion)
-   */
   @Get('available-slots')
+  @ApiOperation({ summary: 'Créneaux disponibles', description: 'Récupère les créneaux disponibles pour un praticien à une date donnée' })
+  @ApiQuery({ name: 'practitionerId', description: 'UUID du praticien' })
+  @ApiQuery({ name: 'date', description: 'Date au format YYYY-MM-DD' })
+  @ApiResponse({ status: 200, description: 'Liste des créneaux' })
   async getAvailableSlots(
     @Query('practitionerId') practitionerId: string,
     @Query('date') date: string,
@@ -42,12 +47,12 @@ export class AppointmentsController {
     return this.appointmentsService.getAvailableSlots(practitionerId, date);
   }
 
-  /**
-   * GET /appointments/me
-   * Récupère les rendez-vous de l'utilisateur authentifié
-   */
   @Get('me')
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Mes rendez-vous', description: 'Récupère les rendez-vous de l\'utilisateur connecté' })
+  @ApiResponse({ status: 200, description: 'Liste des rendez-vous' })
+  @ApiResponse({ status: 401, description: 'Non authentifié' })
   async getMyAppointments(
     @CurrentUser() user: User,
   ): Promise<AppointmentResponseDto[]> {
@@ -58,12 +63,16 @@ export class AppointmentsController {
     return AppointmentResponseDto.fromEntities(appointments);
   }
 
-  /**
-   * GET /appointments
-   * Récupère tous les rendez-vous (avec filtres optionnels)
-   */
   @Get()
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Liste des rendez-vous', description: 'Récupère tous les rendez-vous avec filtres optionnels' })
+  @ApiQuery({ name: 'practitionerId', required: false, description: 'Filtrer par praticien' })
+  @ApiQuery({ name: 'patientId', required: false, description: 'Filtrer par patient' })
+  @ApiQuery({ name: 'status', required: false, enum: AppointmentStatus, description: 'Filtrer par statut' })
+  @ApiQuery({ name: 'fromDate', required: false, description: 'Date de début (ISO 8601)' })
+  @ApiQuery({ name: 'toDate', required: false, description: 'Date de fin (ISO 8601)' })
+  @ApiResponse({ status: 200, description: 'Liste des rendez-vous' })
   async findAll(
     @Query('practitionerId') practitionerId?: string,
     @Query('patientId') patientId?: string,
@@ -81,12 +90,13 @@ export class AppointmentsController {
     return AppointmentResponseDto.fromEntities(appointments);
   }
 
-  /**
-   * GET /appointments/:id
-   * Récupère un rendez-vous par son ID
-   */
   @Get(':id')
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Détail d\'un rendez-vous' })
+  @ApiParam({ name: 'id', description: 'UUID du rendez-vous' })
+  @ApiResponse({ status: 200, description: 'Rendez-vous trouvé' })
+  @ApiResponse({ status: 404, description: 'Rendez-vous non trouvé' })
   async findById(
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<AppointmentResponseDto> {
@@ -97,13 +107,13 @@ export class AppointmentsController {
     return AppointmentResponseDto.fromEntity(appointment);
   }
 
-  /**
-   * POST /appointments
-   * Crée un nouveau rendez-vous
-   * Le patient est automatiquement l'utilisateur authentifié
-   */
   @Post()
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Créer un rendez-vous', description: 'Le patient est automatiquement l\'utilisateur connecté' })
+  @ApiResponse({ status: 201, description: 'Rendez-vous créé' })
+  @ApiResponse({ status: 400, description: 'Créneau invalide' })
+  @ApiResponse({ status: 409, description: 'Créneau déjà réservé' })
   async create(
     @CurrentUser() user: User,
     @Body() createAppointmentDto: CreateAppointmentDto,
@@ -119,12 +129,14 @@ export class AppointmentsController {
     return AppointmentResponseDto.fromEntity(fullAppointment!);
   }
 
-  /**
-   * PUT /appointments/:id
-   * Met à jour un rendez-vous
-   */
   @Put(':id')
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Modifier un rendez-vous' })
+  @ApiParam({ name: 'id', description: 'UUID du rendez-vous' })
+  @ApiResponse({ status: 200, description: 'Rendez-vous modifié' })
+  @ApiResponse({ status: 403, description: 'Non autorisé' })
+  @ApiResponse({ status: 404, description: 'Rendez-vous non trouvé' })
   async update(
     @Param('id', ParseUUIDPipe) id: string,
     @CurrentUser() user: User,
@@ -142,12 +154,14 @@ export class AppointmentsController {
     return AppointmentResponseDto.fromEntity(fullAppointment!);
   }
 
-  /**
-   * DELETE /appointments/:id
-   * Annule un rendez-vous
-   */
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Annuler un rendez-vous' })
+  @ApiParam({ name: 'id', description: 'UUID du rendez-vous' })
+  @ApiResponse({ status: 200, description: 'Rendez-vous annulé' })
+  @ApiResponse({ status: 400, description: 'Rendez-vous non annulable' })
+  @ApiResponse({ status: 403, description: 'Non autorisé' })
   async cancel(
     @Param('id', ParseUUIDPipe) id: string,
     @CurrentUser() user: User,

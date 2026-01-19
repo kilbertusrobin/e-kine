@@ -1,7 +1,6 @@
 import {
   Controller,
   Get,
-  Post,
   Put,
   Delete,
   Body,
@@ -9,35 +8,39 @@ import {
   UseGuards,
   HttpCode,
   HttpStatus,
+  ParseUUIDPipe,
 } from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiParam,
+} from '@nestjs/swagger';
 import { ProfilesService } from './profiles.service';
-import { CreateProfileDto, UpdateProfileDto } from './dtos';
+import { UpdateProfileDto } from './dtos';
 import { JwtAuthGuard } from '../auth/guards';
 import { CurrentUser } from '../auth/decorators';
 import { User } from '../users/entities/user.entity';
 
-/**
- * Controller de gestion des profils
- */
+@ApiTags('Profiles')
+@ApiBearerAuth('JWT-auth')
 @Controller('profiles')
 @UseGuards(JwtAuthGuard)
 export class ProfilesController {
   constructor(private readonly profilesService: ProfilesService) {}
 
-  /**
-   * GET /profiles/me
-   * Récupère le profil de l'utilisateur authentifié
-   */
   @Get('me')
+  @ApiOperation({ summary: 'Mon profil', description: 'Récupère le profil de l\'utilisateur connecté' })
+  @ApiResponse({ status: 200, description: 'Profil trouvé' })
+  @ApiResponse({ status: 401, description: 'Non authentifié' })
   async getMyProfile(@CurrentUser() user: User) {
     return this.profilesService.findByUserId(user.id);
   }
 
-  /**
-   * PUT /profiles/me
-   * Met à jour le profil de l'utilisateur authentifié
-   */
   @Put('me')
+  @ApiOperation({ summary: 'Modifier mon profil' })
+  @ApiResponse({ status: 200, description: 'Profil modifié' })
   async updateMyProfile(
     @CurrentUser() user: User,
     @Body() updateProfileDto: UpdateProfileDto,
@@ -45,34 +48,32 @@ export class ProfilesController {
     return this.profilesService.updateByUserId(user.id, updateProfileDto);
   }
 
-  /**
-   * GET /profiles/:id
-   * Récupère un profil par son ID
-   */
   @Get(':id')
-  async getProfile(@Param('id') id: string) {
+  @ApiOperation({ summary: 'Profil par ID' })
+  @ApiParam({ name: 'id', description: 'UUID du profil' })
+  @ApiResponse({ status: 200, description: 'Profil trouvé' })
+  @ApiResponse({ status: 404, description: 'Profil non trouvé' })
+  async getProfile(@Param('id', ParseUUIDPipe) id: string) {
     return this.profilesService.findById(id);
   }
 
-  /**
-   * PUT /profiles/:id
-   * Met à jour un profil par son ID
-   */
   @Put(':id')
+  @ApiOperation({ summary: 'Modifier un profil par ID' })
+  @ApiParam({ name: 'id', description: 'UUID du profil' })
+  @ApiResponse({ status: 200, description: 'Profil modifié' })
   async updateProfile(
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() updateProfileDto: UpdateProfileDto,
   ) {
     return this.profilesService.update(id, updateProfileDto);
   }
 
-  /**
-   * DELETE /profiles/:id
-   * Supprime un profil par son ID
-   */
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteProfile(@Param('id') id: string) {
+  @ApiOperation({ summary: 'Supprimer un profil' })
+  @ApiParam({ name: 'id', description: 'UUID du profil' })
+  @ApiResponse({ status: 204, description: 'Profil supprimé' })
+  async deleteProfile(@Param('id', ParseUUIDPipe) id: string) {
     await this.profilesService.delete(id);
   }
 }
