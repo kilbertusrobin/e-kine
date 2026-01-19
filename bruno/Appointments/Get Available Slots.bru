@@ -1,0 +1,44 @@
+meta {
+  name: Get Available Slots
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/appointments/available-slots?practitionerId={{practitionerId}}&date={{date}}
+  body: none
+  auth: none
+}
+
+query {
+  practitionerId: {{practitionerId}}
+  date: {{date}}
+}
+
+vars:pre-request {
+  practitionerId: uuid-du-praticien
+  date: 2024-01-15
+}
+
+docs {
+  # Get Available Slots
+
+  Récupère les créneaux disponibles pour un praticien à une date donnée.
+
+  **Authentication:** Aucune (route publique)
+
+  **Query Parameters:**
+  - `practitionerId` (string, required): UUID du praticien
+  - `date` (string, required): Date au format YYYY-MM-DD
+
+  **Response:**
+  - `date` (string): Date concernée
+  - `practitionerId` (string): UUID du praticien
+  - `availableSlots` (string[]): Créneaux disponibles (ISO 8601)
+  - `allSlots` (array): Tous les créneaux avec leur statut
+
+  **Règles métier:**
+  - Créneaux de 30 minutes (9h, 9h30, 10h, etc.)
+  - Horaires: 9h-13h et 14h-17h
+  - Pas de weekend
+}

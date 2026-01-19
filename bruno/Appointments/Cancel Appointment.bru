@@ -1,0 +1,38 @@
+meta {
+  name: Cancel Appointment
+  type: http
+  seq: 7
+}
+
+delete {
+  url: {{baseUrl}}/appointments/:id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: uuid-du-rdv
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+docs {
+  # Cancel Appointment
+
+  Annule un rendez-vous (soft delete via statut "cancelled").
+  Seul le patient ou le praticien du RDV peut l'annuler.
+
+  **Authentication:** Bearer Token (JWT)
+
+  **Path Parameters:**
+  - `id` (string): UUID du rendez-vous
+
+  **Response:** Appointment avec statut "cancelled"
+
+  **Errors:**
+  - 400 Bad Request: RDV déjà annulé ou terminé
+  - 403 Forbidden: Non autorisé à annuler ce RDV
+  - 404 Not Found: RDV non trouvé
+}

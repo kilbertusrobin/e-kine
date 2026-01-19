@@ -1,0 +1,25 @@
+meta {
+  name: Get All Care Types
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/care-types
+  body: none
+  auth: none
+}
+
+docs {
+  # Get All Care Types
+
+  Récupère la liste de tous les types de soins disponibles.
+
+  **Authentication:** Aucune (route publique)
+
+  **Response:** Array de CareType
+  - `id` (string): UUID du type de soin
+  - `label` (string): Libellé du type de soin (ex: "Kinésithérapie")
+  - `createdAt` (Date): Date de création
+  - `updatedAt` (Date): Date de mise à jour
+}

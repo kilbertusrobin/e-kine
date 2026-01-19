@@ -1,0 +1,29 @@
+meta {
+  name: Get My Care Types
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/care-types/me
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+docs {
+  # Get My Care Types
+
+  Récupère les types de soins associés au praticien actuellement authentifié.
+
+  **Authentication:** Bearer Token (JWT)
+
+  **Response:** Array de CareType
+  - `id` (string): UUID du type de soin
+  - `label` (string): Libellé du type de soin
+  - `createdAt` (Date): Date de création
+  - `updatedAt` (Date): Date de mise à jour
+}

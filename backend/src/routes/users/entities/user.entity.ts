@@ -6,9 +6,12 @@ import {
   UpdateDateColumn,
   Index,
   OneToOne,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import { UserRole } from '../enums/user-role.enum';
 import { Profile } from '../../profiles/entities/profile.entity';
+import { CareType } from '../../care-types/entities/care-type.entity';
 
 /**
  * Entité User - Représente un utilisateur du système (Patient ou Praticien)
@@ -98,6 +101,27 @@ export class User {
     eager: false,
   })
   profile: Profile;
+
+  /**
+   * Relation ManyToMany avec CareType
+   * Types de soins que le praticien sait pratiquer
+   * Table de jointure : user_care_types
+   */
+  @ManyToMany(() => CareType, (careType) => careType.practitioners, {
+    eager: false,
+  })
+  @JoinTable({
+    name: 'user_care_types',
+    joinColumn: {
+      name: 'user_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'care_type_id',
+      referencedColumnName: 'id',
+    },
+  })
+  careTypes: CareType[];
 
   /**
    * Vérifie si l'utilisateur est un patient

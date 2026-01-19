@@ -1,0 +1,48 @@
+meta {
+  name: Update My Care Types
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{baseUrl}}/care-types/me
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "careTypeIds": [
+      "uuid-type-soin-1",
+      "uuid-type-soin-2"
+    ]
+  }
+}
+
+docs {
+  # Update My Care Types
+
+  Met à jour les types de soins du praticien actuellement authentifié.
+  Remplace entièrement les types de soins existants par ceux fournis.
+
+  **Authentication:** Bearer Token (JWT)
+
+  **Authorization:** Uniquement pour les praticiens (role: PRACTITIONER)
+
+  **Body:**
+  - `careTypeIds` (string[]): Tableau des UUIDs des types de soins à associer
+
+  **Response:** Array de CareType associés
+  - `id` (string): UUID du type de soin
+  - `label` (string): Libellé du type de soin
+  - `createdAt` (Date): Date de création
+  - `updatedAt` (Date): Date de mise à jour
+
+  **Errors:**
+  - 403 Forbidden: Si l'utilisateur n'est pas un praticien
+  - 404 Not Found: Si un des UUIDs ne correspond pas à un type de soin existant
+}

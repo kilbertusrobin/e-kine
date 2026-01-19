@@ -1,0 +1,52 @@
+meta {
+  name: Update Appointment
+  type: http
+  seq: 6
+}
+
+put {
+  url: {{baseUrl}}/appointments/:id
+  body: json
+  auth: bearer
+}
+
+params:path {
+  id: uuid-du-rdv
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "dateTime": "2024-01-15T10:00:00.000Z",
+    "status": "confirmed",
+    "notes": "Nouvelles notes"
+  }
+}
+
+docs {
+  # Update Appointment
+
+  Met à jour un rendez-vous existant.
+  Seul le patient ou le praticien du RDV peut le modifier.
+
+  **Authentication:** Bearer Token (JWT)
+
+  **Path Parameters:**
+  - `id` (string): UUID du rendez-vous
+
+  **Body (tous les champs sont optionnels):**
+  - `dateTime` (string): Nouvelle date/heure (ISO 8601)
+  - `careTypeId` (string): Nouveau type de soin
+  - `status` (string): pending | confirmed | cancelled | completed
+  - `notes` (string): Notes ou commentaires
+
+  **Response:** Appointment mis à jour
+
+  **Errors:**
+  - 403 Forbidden: Non autorisé à modifier ce RDV
+  - 404 Not Found: RDV non trouvé
+  - 409 Conflict: Nouveau créneau déjà réservé
+}

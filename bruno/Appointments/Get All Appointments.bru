@@ -1,0 +1,40 @@
+meta {
+  name: Get All Appointments
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/appointments
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+query {
+  ~practitionerId: uuid-praticien
+  ~patientId: uuid-patient
+  ~status: pending
+  ~fromDate: 2024-01-01
+  ~toDate: 2024-12-31
+}
+
+docs {
+  # Get All Appointments
+
+  Récupère tous les rendez-vous avec filtres optionnels.
+
+  **Authentication:** Bearer Token (JWT)
+
+  **Query Parameters (tous optionnels):**
+  - `practitionerId` (string): Filtrer par praticien
+  - `patientId` (string): Filtrer par patient
+  - `status` (string): pending | confirmed | cancelled | completed
+  - `fromDate` (string): Date de début (ISO 8601)
+  - `toDate` (string): Date de fin (ISO 8601)
+
+  **Response:** Array de Appointment
+}

@@ -9,6 +9,9 @@ import { AuthModule } from './routes/auth/auth.module';
 import { SessionsModule } from './routes/sessions/sessions.module';
 import { ProfilesModule } from './routes/profiles/profiles.module';
 import { PrescriptionsModule } from './routes/prescriptions/prescriptions.module';
+import { CareTypesModule } from './routes/care-types/care-types.module';
+import { AppointmentsModule } from './routes/appointments/appointments.module';
+import { SchedulerModule } from './routes/scheduler/scheduler.module';
 
 /**
  * Module principal de l'application
@@ -31,6 +34,9 @@ import { PrescriptionsModule } from './routes/prescriptions/prescriptions.module
     AuthModule,
     ProfilesModule,
     PrescriptionsModule,
+    CareTypesModule,
+    AppointmentsModule,
+    SchedulerModule,
   ],
   controllers: [AppController],
   providers: [AppService],

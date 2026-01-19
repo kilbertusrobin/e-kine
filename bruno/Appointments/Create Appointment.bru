@@ -1,0 +1,53 @@
+meta {
+  name: Create Appointment
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/appointments
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4MGU1MTA0Ny0wMTViLTRjMTYtYjBhMC05NTExZjBkN2M0NzIiLCJlbWFpbCI6InJvYmluLmtpbGJlcnR1c0BnbWFpbC5jb20iLCJyb2xlIjoicGF0aWVudCIsImlhdCI6MTc2ODgxNTY4NiwiZXhwIjoxNzY4ODE5Mjg2fQ.VEpZKV2I9J7LfIFEooxq--YvFcO2PZpiTmVQ6bX0zoc
+}
+
+body:json {
+  {
+    "practitionerId": "07179903-8cd8-4830-904c-686702690eec",
+    "dateTime": "2024-01-15T09:00:00.000Z",
+    "careTypeId": "2a619dad-6b9b-4ebe-bda7-d91a8cee5502",
+    "notes": "Notes optionnelles"
+  }
+}
+
+docs {
+  # Create Appointment
+  
+  Crée un nouveau rendez-vous.
+  Le patient est automatiquement l'utilisateur authentifié.
+  
+  **Authentication:** Bearer Token (JWT)
+  
+  **Body:**
+  - `practitionerId` (string, required): UUID du praticien
+  - `dateTime` (string, required): Date et heure ISO 8601 (doit être un créneau valide)
+  - `careTypeId` (string, optional): UUID du type de soin
+  - `notes` (string, optional): Notes ou commentaires
+  
+  **Règles métier validées:**
+  - Créneaux de 30 minutes uniquement (9h, 9h30, 10h, etc.)
+  - Horaires: 9h-13h et 14h-17h
+  - Pas de weekend
+  - Pas de créneau dans le passé
+  - Pas de double booking pour le praticien
+  
+  **Response:** Appointment créé
+  
+  **Errors:**
+  - 400 Bad Request: Créneau invalide ou dans le passé
+  - 404 Not Found: Praticien non trouvé
+  - 409 Conflict: Créneau déjà réservé
+}
