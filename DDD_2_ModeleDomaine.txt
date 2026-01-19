@@ -1,0 +1,76 @@
+@startuml
+
+skinparam backgroundColor #FEFEFE
+
+title Modele de Domaine DDD - Plateforme E-Kine
+
+skinparam defaultFontSize 10
+skinparam shadowing false
+skinparam RectangleBorderThickness 1
+skinparam RectangleRoundCorner 8
+
+' === AGGREGATE : USER ===
+
+rectangle "Aggregate" as AggUser #F2F2F2 {
+  rectangle "**User**\n<<Aggregate Root>>\n\n- id: UUID\n- email: string\n- googleId: string\n- role: Role\n- isActive: boolean" as User #5B9BD5
+
+  rectangle "**Role**\n<<Value Object>>\n\n- PATIENT\n- PRACTITIONER" as Role #A9D18E
+}
+
+' === AGGREGATE : PROFILE ===
+
+rectangle "Aggregate" as AggProfile #F2F2F2 {
+  rectangle "**Profile**\n<<Entity>>\n\n- id: UUID\n- firstName: string\n- lastName: string\n- phone: string" as Profile #5B9BD5
+
+  rectangle "**Adresse**\n<<Value Object>>\n\n- address: string\n- city: string\n- postalCode: string" as Adresse #A9D18E
+}
+
+' === AGGREGATE : APPOINTMENT (CORE) ===
+
+rectangle "Aggregate (Core Domain)" as AggAppointment #FFF2CC {
+  rectangle "**Appointment**\n<<Aggregate Root>>\n\n- id: UUID\n- dateTime: DateTime\n- notes: string" as Appointment #F4B183
+
+  rectangle "**Creneau**\n<<Value Object>>\n\n- debut: Time\n- duree: 30min\n- jourOuvre: boolean" as Creneau #A9D18E
+
+  rectangle "**Statut**\n<<Value Object>>\n\n- CONFIRMED\n- CANCELLED\n- COMPLETED" as Statut #A9D18E
+}
+
+' === ENTITY : CARE TYPE ===
+
+rectangle "**CareType**\n<<Entity>>\n\n- id: UUID\n- label: string" as CareType #5B9BD5
+
+' === ENTITY : PRESCRIPTION ===
+
+rectangle "**Prescription**\n<<Entity>>\n\n- id: UUID\n- filename: string\n- pdfData: base64" as Prescription #5B9BD5
+
+' === ENTITY : SESSION ===
+
+rectangle "**Session**\n<<Entity>>\n\n- id: UUID\n- refreshToken: string\n- expiresAt: DateTime\n- deviceInfo: string" as Session #5B9BD5
+
+' === RELATIONS ===
+
+User "1" --> "1" Profile : possede
+User "1" --> "*" Session : a
+User "1" --> "*" Appointment : "praticien"
+User "1" --> "*" Appointment : "patient"
+User "*" --> "*" CareType : propose
+User "1" --> "*" Prescription : possede
+
+Appointment "*" --> "1" CareType : concerne
+Appointment -- Creneau
+Appointment -- Statut
+
+Profile -- Adresse
+User -- Role
+
+' === LEGENDE ===
+
+legend right
+  |= Couleur |= Type |
+  | <#F4B183> | Aggregate Root (Core) |
+  | <#5B9BD5> | Entity |
+  | <#A9D18E> | Value Object |
+  | <#FFF2CC> | Core Domain |
+endlegend
+
+@enduml

@@ -1,48 +1,43 @@
 @startuml
 
-skinparam backgroundColor #FFFFFF
+skinparam backgroundColor #FEFEFE
 
 title Diagramme C4 - Niveau 2 : Conteneurs\nPlateforme E-Kine
 
-skinparam rectangle {
-  BackgroundColor #F5F5DC
-  BorderColor #000000
-  BorderThickness 2
-  roundCorner 15
-  shadowing true
-}
-
 skinparam defaultFontSize 12
+skinparam shadowing false
+skinparam RectangleBorderThickness 1
+skinparam RectangleRoundCorner 10
 
 ' === ACTEURS ===
 
-rectangle "**Patient**\n[Personne]" as patient #08427B
-rectangle "**Kinesitherapeute**\n[Personne]" as kine #08427B
+rectangle "**Patient**\n[Personne]" as patient #B4D7E8
+rectangle "**Kinesitherapeute**\n[Personne]" as kine #B4D7E8
 
 ' === SYSTEME E-KINE ===
 
-rectangle "Plateforme E-Kine" as ekine #E8E8E8 {
+rectangle "Plateforme E-Kine" as ekine #F2F2F2 {
 
-  rectangle "**Application Web**\n\n[React / Vite]\n\nInterface utilisateur" as frontend #438DD5
+  rectangle "**Application Web**\n\n[React / Vite]\n\nInterface utilisateur" as frontend #A9D18E
 
-  rectangle "**API Backend**\n\n[NestJS / TypeScript]\n\nLogique metier et API REST" as backend #438DD5
+  rectangle "**API Backend**\n\n[NestJS / TypeScript]\n\nLogique metier" as backend #5B9BD5
 
-  database "**Base de Donnees**\n\n[PostgreSQL]\n\nStockage des donnees" as postgres #438DD5
+  rectangle "**Base de Donnees**\n\n[PostgreSQL]\n\nStockage" as postgres #FFD966
 
 }
 
 ' === SYSTEMES EXTERNES ===
 
-rectangle "**Google OAuth 2.0**\n[Systeme Externe]" as google #999999
+rectangle "**Google OAuth 2.0**\n[Externe]" as google #D6DCE5
 
-rectangle "**Serveur SMTP**\n[Systeme Externe]" as smtp #999999
+rectangle "**Serveur SMTP**\n[Externe]" as smtp #D6DCE5
 
 ' === RELATIONS ===
 
-patient --> frontend : "HTTPS"
-kine --> frontend : "HTTPS"
+patient --> frontend
+kine --> frontend
 
-frontend --> backend : "API REST\n[JSON]"
+frontend --> backend : "API REST"
 backend --> postgres : "TypeORM"
 
 backend --> google : "OAuth 2.0"
