@@ -12,6 +12,7 @@ import { PrescriptionsModule } from './routes/prescriptions/prescriptions.module
 import { CareTypesModule } from './routes/care-types/care-types.module';
 import { AppointmentsModule } from './routes/appointments/appointments.module';
 import { SchedulerModule } from './routes/scheduler/scheduler.module';
+import { FixturesModule } from './fixtures/fixtures.module';
 
 /**
  * Module principal de l'application
@@ -37,6 +38,9 @@ import { SchedulerModule } from './routes/scheduler/scheduler.module';
     CareTypesModule,
     AppointmentsModule,
     SchedulerModule,
+
+    // Fixtures (seed automatique au démarrage)
+    FixturesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
