@@ -68,28 +68,4 @@ export class UserResponseDto {
   @Expose()
   @Type(() => ProfileResponseDto)
   profile?: ProfileResponseDto;
-
-  /**
-   * Méthode helper pour vérifier si l'utilisateur est un patient
-   */
-  @Expose()
-  get isPatient(): boolean {
-    return this.role === UserRole.PATIENT;
-  }
-
-  /**
-   * Méthode helper pour vérifier si l'utilisateur est un praticien
-   */
-  @Expose()
-  get isPractitioner(): boolean {
-    return this.role === UserRole.PRACTITIONER;
-  }
-
-  /**
-   * Méthode helper pour vérifier si le compte peut se connecter
-   */
-  @Expose()
-  get canLogin(): boolean {
-    return this.isActive;
-  }
 }

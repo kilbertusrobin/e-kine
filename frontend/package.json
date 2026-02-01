@@ -10,8 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "date-fns": "^4.1.0",
     "framer-motion": "^11.18.0",
     "react": "^19.1.1",
+    "react-big-calendar": "^1.19.4",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.9.6"
   },
@@ -19,6 +21,7 @@
     "@eslint/js": "^9.36.0",
     "@types/node": "^24.6.0",
     "@types/react": "^19.1.16",
+    "@types/react-big-calendar": "^1.16.3",
     "@types/react-dom": "^19.1.9",
     "@vitejs/plugin-react": "^5.0.4",
     "autoprefixer": "^10.4.21",

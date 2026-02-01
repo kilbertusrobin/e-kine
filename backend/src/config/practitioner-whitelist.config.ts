@@ -4,6 +4,7 @@
  */
 export const PRACTITIONER_EMAIL_WHITELIST: string[] = [
   'rbx.fay@gmail.com',
+  'zlockedwazy@gmail.com',
 ];
 
 /**
