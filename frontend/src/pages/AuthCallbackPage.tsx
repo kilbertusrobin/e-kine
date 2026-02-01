@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { setTokens } from '../services/api'
+import { setTokens, authApi } from '../services/api'
 
 export default function AuthCallbackPage() {
   const navigate = useNavigate()
@@ -19,7 +19,11 @@ export default function AuthCallbackPage() {
 
     if (accessToken && refreshToken) {
       setTokens(accessToken, refreshToken)
-      navigate('/dashboard', { replace: true })
+      authApi.getMe().then(user => {
+        navigate(user.role === 'practitioner' ? '/practitioner' : '/dashboard', { replace: true })
+      }).catch(() => {
+        navigate('/dashboard', { replace: true })
+      })
     } else {
       setError('Tokens manquants dans la reponse')
     }

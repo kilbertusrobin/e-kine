@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { appointmentsApi, careTypesApi, usersApi } from '../services/api'
 import type { User, CareType, AvailableSlots } from '../types'
@@ -36,6 +36,21 @@ export default function BookingPage() {
       setCareTypes(Array.isArray(careData) ? careData : [])
     }).catch(() => {}).finally(() => setLoadingStep1(false))
   }, [])
+
+  // Filter care types by selected practitioner
+  const filteredCareTypes = useMemo(() => {
+    if (!practitionerId) return careTypes
+    const selectedPrac = practitioners.find(p => p.id === practitionerId)
+    if (selectedPrac?.careTypes && selectedPrac.careTypes.length > 0) {
+      return selectedPrac.careTypes
+    }
+    return careTypes
+  }, [practitionerId, practitioners, careTypes])
+
+  // Reset care type when practitioner changes
+  useEffect(() => {
+    setSelectedCareType('')
+  }, [practitionerId])
 
   const fetchSlots = async (pracId: string, date: string) => {
     setLoadingSlots(true)
@@ -212,7 +227,7 @@ export default function BookingPage() {
                       className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors text-gray-900 bg-white appearance-none"
                     >
                       <option value="">Consultation generale</option>
-                      {careTypes.map(ct => (
+                      {filteredCareTypes.map(ct => (
                         <option key={ct.id} value={ct.id}>{ct.label}</option>
                       ))}
                     </select>

@@ -41,7 +41,7 @@ export class UsersService {
         role: UserRole.PRACTITIONER,
         isActive: true,
       },
-      relations: ['profile'],
+      relations: ['profile', 'careTypes'],
       order: { createdAt: 'ASC' },
     });
   }

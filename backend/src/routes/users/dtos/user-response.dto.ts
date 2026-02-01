@@ -1,6 +1,7 @@
 import { Exclude, Expose, Type } from 'class-transformer';
 import { UserRole } from '../enums/user-role.enum';
 import { ProfileResponseDto } from '../../profiles/dtos';
+import { CareTypeResponseDto } from '../../care-types/dtos';
 
 /**
  * DTO pour les réponses API contenant un utilisateur
@@ -68,4 +69,11 @@ export class UserResponseDto {
   @Expose()
   @Type(() => ProfileResponseDto)
   profile?: ProfileResponseDto;
+
+  /**
+   * Types de soins du praticien
+   */
+  @Expose()
+  @Type(() => CareTypeResponseDto)
+  careTypes?: CareTypeResponseDto[];
 }

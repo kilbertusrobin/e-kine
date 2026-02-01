@@ -1,16 +1,21 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
-import { authApi, profileApi, appointmentsApi, careTypesApi } from '../services/api'
-import type { User, Profile, Appointment, CareType } from '../types'
+import { authApi, profileApi, appointmentsApi, careTypesApi, prescriptionsApi } from '../services/api'
+import type { User, Profile, Appointment, CareType, Prescription } from '../types'
 import { AppointmentStatus } from '../types'
 import {
   DashboardShell, BentoCard, ProfileTab, ProfileCompletionModal, AppointmentCalendar,
-  HomeIcon, CalendarIcon, UserIcon, UsersIcon, StethoscopeIcon, ClockIcon, CheckIcon,
+  HomeIcon, CalendarIcon, UserIcon, UsersIcon, StethoscopeIcon, ClockIcon, CheckIcon, DocumentIcon,
   type CalendarEvent,
 } from '../components/dashboard/shared'
 
-type PractitionerTab = 'overview' | 'agenda' | 'patients' | 'care-types' | 'profile'
+type PractitionerTab = 'overview' | 'agenda' | 'patients' | 'prescriptions' | 'care-types' | 'profile'
+
+function isProfileComplete(profile: Profile | null): boolean {
+  if (!profile) return false
+  return !!(profile.firstName && profile.lastName && profile.phone && profile.address && profile.city && profile.pc)
+}
 
 const statusConfig = {
   confirmed: { label: 'Confirme', classes: 'bg-blue-100 text-blue-700' },
@@ -18,13 +23,15 @@ const statusConfig = {
   cancelled: { label: 'Annule', classes: 'bg-red-100 text-red-700' },
 }
 
-export default function PractitionerDashboard({ initialUser }: { initialUser: User }) {
+export default function PractitionerDashboard() {
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState<PractitionerTab>('overview')
+  const [user, setUser] = useState<User | null>(null)
   const [profile, setProfile] = useState<Profile | null>(null)
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [myCareTypes, setMyCareTypes] = useState<CareType[]>([])
   const [allCareTypes, setAllCareTypes] = useState<CareType[]>([])
+  const [prescriptions, setPrescriptions] = useState<Prescription[]>([])
   const [loading, setLoading] = useState(true)
   const [showProfileModal, setShowProfileModal] = useState(false)
   const [profileBannerDismissed, setProfileBannerDismissed] = useState(false)
@@ -32,18 +39,23 @@ export default function PractitionerDashboard({ initialUser }: { initialUser: Us
 
   const loadData = async () => {
     try {
-      const [profileData, appointmentsData, myCareTypesData, allCareTypesData] = await Promise.all([
+      const [userData, profileData, appointmentsData, myCareTypesData, allCareTypesData, prescriptionsData] = await Promise.all([
+        authApi.getMe(),
         profileApi.getMe(),
         appointmentsApi.getMine(),
         careTypesApi.getMine().catch(() => []),
         careTypesApi.getAll().catch(() => []),
+        prescriptionsApi.getAll().catch(() => []),
       ])
+      setUser(userData)
       setProfile(profileData)
       setAppointments(Array.isArray(appointmentsData) ? appointmentsData : [])
       setMyCareTypes(Array.isArray(myCareTypesData) ? myCareTypesData : [])
       setAllCareTypes(Array.isArray(allCareTypesData) ? allCareTypesData : [])
+      setPrescriptions(Array.isArray(prescriptionsData) ? prescriptionsData : [])
     } catch (error) {
-      console.error('Error loading practitioner data:', error)
+      console.error('[PractitionerDashboard] Error loading data:', error)
+      navigate('/login')
     } finally {
       setLoading(false)
     }
@@ -146,13 +158,14 @@ export default function PractitionerDashboard({ initialUser }: { initialUser: Us
     { id: 'overview', label: "Vue d'ensemble", icon: HomeIcon },
     { id: 'agenda', label: 'Agenda', icon: CalendarIcon },
     { id: 'patients', label: 'Patients', icon: UsersIcon },
+    { id: 'prescriptions', label: 'Ordonnances', icon: DocumentIcon },
     { id: 'care-types', label: 'Mes soins', icon: StethoscopeIcon },
     { id: 'profile', label: 'Mon profil', icon: UserIcon },
   ]
 
   const displayName = profile?.firstName && profile?.lastName
     ? `Dr. ${profile.firstName} ${profile.lastName}`
-    : initialUser.email
+    : user?.email || ''
 
   const todayStr = new Date().toLocaleDateString('fr-FR', {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
@@ -171,7 +184,7 @@ export default function PractitionerDashboard({ initialUser }: { initialUser: Us
 
   return (
     <DashboardShell
-      user={initialUser}
+      user={user}
       profile={profile}
       menuItems={menuItems}
       activeTab={activeTab}
@@ -179,7 +192,7 @@ export default function PractitionerDashboard({ initialUser }: { initialUser: Us
       onLogout={handleLogout}
     >
       {/* Profile incomplete banner */}
-      {profile && !profile.isComplete && !profileBannerDismissed && (
+      {profile && !isProfileComplete(profile) && !profileBannerDismissed && (
         <div className="mb-6 bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center flex-shrink-0">
@@ -209,7 +222,7 @@ export default function PractitionerDashboard({ initialUser }: { initialUser: Us
         <OverviewTab
           displayName={displayName}
           todayStr={todayStr}
-          initialUser={initialUser}
+          user={user}
           profile={profile}
           stats={stats}
           todayAppointments={todayAppointments}
@@ -233,6 +246,10 @@ export default function PractitionerDashboard({ initialUser }: { initialUser: Us
         <PatientsTab patients={patients} />
       )}
 
+      {activeTab === 'prescriptions' && (
+        <PrescriptionsTab prescriptions={prescriptions} patients={patients} />
+      )}
+
       {activeTab === 'care-types' && (
         <CareTypesTab
           allCareTypes={allCareTypes}
@@ -242,7 +259,7 @@ export default function PractitionerDashboard({ initialUser }: { initialUser: Us
       )}
 
       {activeTab === 'profile' && (
-        <ProfileTab profile={profile} user={initialUser} onUpdate={loadData} />
+        <ProfileTab profile={profile} user={user} onUpdate={loadData} />
       )}
 
       {showProfileModal && (
@@ -261,11 +278,11 @@ export default function PractitionerDashboard({ initialUser }: { initialUser: Us
 // =============================================================================
 
 function OverviewTab({
-  displayName, todayStr, initialUser, profile, stats, todayAppointments, calendarEvents, onSelectEvent, onNavigate,
+  displayName, todayStr, user, profile, stats, todayAppointments, calendarEvents, onSelectEvent, onNavigate,
 }: {
   displayName: string
   todayStr: string
-  initialUser: User
+  user: User | null
   profile: Profile | null
   stats: { patientsThisWeek: number; upcomingTotal: number; completedThisMonth: number; cancellationRate: number }
   todayAppointments: Appointment[]
@@ -292,12 +309,12 @@ function OverviewTab({
                   : "Aucun rendez-vous aujourd'hui"}
               </p>
             </div>
-            {initialUser.googlePicture ? (
-              <img src={initialUser.googlePicture} alt="" className="w-16 h-16 lg:w-20 lg:h-20 rounded-2xl border-2 border-white/20 shadow-lg ml-4 flex-shrink-0" />
+            {user?.googlePicture ? (
+              <img src={user.googlePicture} alt="" className="w-16 h-16 lg:w-20 lg:h-20 rounded-2xl border-2 border-white/20 shadow-lg ml-4 flex-shrink-0" />
             ) : (
               <div className="w-16 h-16 lg:w-20 lg:h-20 rounded-2xl bg-white/10 border-2 border-white/20 flex items-center justify-center ml-4 flex-shrink-0">
                 <span className="text-white/90 font-bold text-2xl">
-                  {profile?.firstName?.[0] || initialUser.email?.[0]?.toUpperCase()}
+                  {profile?.firstName?.[0] || user?.email?.[0]?.toUpperCase()}
                 </span>
               </div>
             )}
@@ -868,6 +885,94 @@ function CareTypesTab({
                 <span>Enregistrer</span>
               )}
             </button>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// =============================================================================
+// PRESCRIPTIONS TAB (practitioner view)
+// =============================================================================
+
+function PrescriptionsTab({
+  prescriptions,
+  patients,
+}: {
+  prescriptions: Prescription[]
+  patients: {
+    id: string
+    email: string
+    googlePicture: string | null
+    appointments: Appointment[]
+    lastVisit: Date | null
+  }[]
+}) {
+  const patientMap = useMemo(() => {
+    const map = new Map<string, { email: string; googlePicture: string | null }>()
+    patients.forEach(p => map.set(p.id, { email: p.email, googlePicture: p.googlePicture }))
+    return map
+  }, [patients])
+
+  const sorted = useMemo(() =>
+    [...prescriptions].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+    [prescriptions]
+  )
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold text-gray-900">Ordonnances patients</h1>
+        <p className="text-gray-600 mt-1">Consultez les prescriptions de vos patients</p>
+      </div>
+
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm">
+        {sorted.length > 0 ? (
+          <div className="divide-y divide-gray-100">
+            {sorted.map((rx) => {
+              const patient = patientMap.get(rx.userId)
+              return (
+                <div key={rx.id} className="p-5 flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    <div className="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <svg className="w-6 h-6 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"/>
+                        <path d="M14 2v6h6"/>
+                        <path d="M16 13H8M16 17H8M10 9H8"/>
+                      </svg>
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-medium text-gray-900 truncate">{rx.filename}</p>
+                      <p className="text-sm text-gray-500">
+                        {new Date(rx.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-3 flex-shrink-0 ml-4">
+                    {patient ? (
+                      <div className="flex items-center space-x-2">
+                        {patient.googlePicture ? (
+                          <img src={patient.googlePicture} alt="" className="w-7 h-7 rounded-full" />
+                        ) : (
+                          <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center">
+                            <span className="text-gray-600 font-semibold text-xs">{patient.email[0]?.toUpperCase()}</span>
+                          </div>
+                        )}
+                        <span className="text-sm text-gray-600 truncate max-w-[200px]">{patient.email}</span>
+                      </div>
+                    ) : (
+                      <span className="text-sm text-gray-400">Patient inconnu</span>
+                    )}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        ) : (
+          <div className="p-12 text-center">
+            <DocumentIcon className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+            <p className="text-gray-500">Aucune ordonnance</p>
           </div>
         )}
       </div>

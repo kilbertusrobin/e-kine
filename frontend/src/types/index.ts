@@ -24,6 +24,7 @@ export interface User {
   createdAt: string
   updatedAt: string
   profile?: Profile
+  careTypes?: CareType[]
   isPatient: boolean
   isPractitioner: boolean
   canLogin: boolean

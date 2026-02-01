@@ -10,9 +10,12 @@ import {
   ClockIcon, StethoscopeIcon,
   type CalendarEvent,
 } from '../components/dashboard/shared'
-import PractitionerDashboard from './PractitionerDashboard'
-
 type Tab = 'overview' | 'appointments' | 'prescriptions' | 'profile'
+
+function isProfileComplete(profile: Profile | null): boolean {
+  if (!profile) return false
+  return !!(profile.firstName && profile.lastName && profile.phone && profile.address && profile.city && profile.pc)
+}
 
 export default function DashboardPage() {
   const navigate = useNavigate()
@@ -72,11 +75,6 @@ export default function DashboardPage() {
     )
   }
 
-  // Role detection: practitioner gets a different dashboard
-  if (user?.isPractitioner) {
-    return <PractitionerDashboard initialUser={user} />
-  }
-
   const upcomingAppointments = appointments
     .filter(a => a.status === AppointmentStatus.CONFIRMED && new Date(a.dateTime) > new Date())
     .sort((a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime())
@@ -102,7 +100,7 @@ export default function DashboardPage() {
       onLogout={handleLogout}
     >
       {/* Profile incomplete banner */}
-      {profile && !profile.isComplete && !profileBannerDismissed && (
+      {profile && !isProfileComplete(profile) && !profileBannerDismissed && (
         <div className="mb-6 bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center flex-shrink-0">
@@ -143,12 +141,14 @@ export default function DashboardPage() {
           prescriptions={prescriptions}
           onOpenPrescriptionModal={() => setShowPrescriptionModal(true)}
           onOpenProfileModal={() => setShowProfileModal(true)}
+          onTabChange={(tab) => setActiveTab(tab)}
         />
       )}
       {activeTab === 'appointments' && (
         <AppointmentsTab
           upcomingAppointments={upcomingAppointments}
           pastAppointments={pastAppointments}
+          onReload={loadData}
         />
       )}
       {activeTab === 'prescriptions' && (
@@ -199,6 +199,7 @@ function OverviewTab({
   prescriptions,
   onOpenPrescriptionModal,
   onOpenProfileModal,
+  onTabChange,
 }: {
   user: User | null
   profile: Profile | null
@@ -207,6 +208,7 @@ function OverviewTab({
   prescriptions: Prescription[]
   onOpenPrescriptionModal: () => void
   onOpenProfileModal: () => void
+  onTabChange: (tab: Tab) => void
 }) {
   const displayName = profile?.firstName || user?.email?.split('@')[0] || 'Patient'
 
@@ -321,25 +323,64 @@ function OverviewTab({
           </div>
         </div>
 
-        {/* Next Appointment */}
-        <BentoCard className="bg-white lg:col-span-2">
-          <div className="flex items-center space-x-3 mb-4">
-            <div className="w-9 h-9 rounded-lg bg-green-50 flex items-center justify-center">
-              <ClockIcon className="w-4 h-4 text-green-600" />
+        {/* Upcoming Appointments */}
+        <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm">
+          <div className="p-5 border-b border-gray-100 flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="w-9 h-9 rounded-lg bg-green-50 flex items-center justify-center">
+                <ClockIcon className="w-4 h-4 text-green-600" />
+              </div>
+              <h2 className="text-base font-semibold text-gray-900">Rendez-vous a venir</h2>
+              {upcomingAppointments.length > 0 && (
+                <span className="text-xs font-semibold text-primary-600 bg-primary-50 px-2 py-0.5 rounded-full">
+                  {upcomingAppointments.length}
+                </span>
+              )}
             </div>
-            <h2 className="text-base font-semibold text-gray-900">Prochain rendez-vous</h2>
+            {upcomingAppointments.length > 5 && (
+              <button onClick={() => onTabChange('appointments')} className="text-sm text-primary-600 font-medium hover:text-primary-700 transition-colors">
+                Voir tous
+              </button>
+            )}
           </div>
-          {upcomingAppointments.length > 0 ? (
-            <NextAppointmentDisplay appointment={upcomingAppointments[0]} />
-          ) : (
-            <div className="text-center py-4">
-              <p className="text-gray-400 text-sm">Aucun rendez-vous prevu</p>
-              <a href="/booking" className="text-primary-600 text-sm font-medium hover:underline mt-2 inline-block">
-                Prendre rendez-vous
-              </a>
-            </div>
-          )}
-        </BentoCard>
+          <div className="divide-y divide-gray-50">
+            {upcomingAppointments.length > 0 ? (
+              upcomingAppointments.slice(0, 5).map((apt) => {
+                const date = new Date(apt.dateTime)
+                const time = date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+                const dayStr = date.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })
+                return (
+                  <div key={apt.id} className="px-5 py-3.5 flex items-center justify-between hover:bg-gray-50/50 transition-colors">
+                    <div className="flex items-center space-x-4">
+                      <div className="w-12 h-12 rounded-xl bg-primary-50 flex flex-col items-center justify-center flex-shrink-0">
+                        <span className="text-primary-700 font-bold text-sm">{date.getDate()}</span>
+                        <span className="text-primary-500 text-[10px] uppercase">{date.toLocaleDateString('fr-FR', { month: 'short' })}</span>
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-gray-900 truncate">{apt.careType?.label || 'Consultation'}</p>
+                        <p className="text-xs text-gray-500 capitalize">{dayStr} a {time}</p>
+                        {apt.practitioner && (
+                          <p className="text-xs text-gray-400 truncate">{apt.practitioner.email}</p>
+                        )}
+                      </div>
+                    </div>
+                    <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700 flex-shrink-0">
+                      Confirme
+                    </span>
+                  </div>
+                )
+              })
+            ) : (
+              <div className="p-8 text-center">
+                <ClockIcon className="w-10 h-10 text-gray-200 mx-auto mb-3" />
+                <p className="text-sm text-gray-400">Aucun rendez-vous a venir</p>
+                <a href="/booking" className="text-primary-600 text-sm font-medium hover:underline mt-2 inline-block">
+                  Prendre rendez-vous
+                </a>
+              </div>
+            )}
+          </div>
+        </div>
 
         {/* My Practitioners */}
         <BentoCard className="bg-white">
@@ -508,9 +549,11 @@ function NextAppointmentDisplay({ appointment }: { appointment: Appointment }) {
 function AppointmentsTab({
   upcomingAppointments,
   pastAppointments,
+  onReload,
 }: {
   upcomingAppointments: Appointment[]
   pastAppointments: Appointment[]
+  onReload: () => void
 }) {
   return (
     <div className="space-y-8">
@@ -537,7 +580,7 @@ function AppointmentsTab({
           {upcomingAppointments.length > 0 ? (
             upcomingAppointments.map((apt) => (
               <div key={apt.id} className="p-6">
-                <AppointmentCard appointment={apt} />
+                <AppointmentCard appointment={apt} onCancel={onReload} />
               </div>
             ))
           ) : (
@@ -649,16 +692,32 @@ function AppointmentCard({
   appointment,
   featured = false,
   past = false,
+  onCancel,
 }: {
   appointment: Appointment
   featured?: boolean
   past?: boolean
+  onCancel?: (id: string) => void
 }) {
+  const [cancelling, setCancelling] = useState(false)
   const date = new Date(appointment.dateTime)
   const statusColors = {
     confirmed: 'bg-green-100 text-green-700',
     cancelled: 'bg-red-100 text-red-700',
     completed: 'bg-gray-100 text-gray-700',
+  }
+
+  const handleCancel = async () => {
+    if (!window.confirm('Etes-vous sur de vouloir annuler ce rendez-vous ?')) return
+    setCancelling(true)
+    try {
+      await appointmentsApi.cancel(appointment.id)
+      onCancel?.(appointment.id)
+    } catch (error) {
+      console.error('Error cancelling appointment:', error)
+    } finally {
+      setCancelling(false)
+    }
   }
 
   return (
@@ -686,8 +745,16 @@ function AppointmentCard({
           {appointment.status === 'completed' && 'Termine'}
         </span>
         {!past && appointment.status === 'confirmed' && (
-          <button className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
-            <TrashIcon className="w-5 h-5" />
+          <button
+            onClick={handleCancel}
+            disabled={cancelling}
+            className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
+          >
+            {cancelling ? (
+              <div className="w-5 h-5 border-2 border-red-400 border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <TrashIcon className="w-5 h-5" />
+            )}
           </button>
         )}
       </div>
