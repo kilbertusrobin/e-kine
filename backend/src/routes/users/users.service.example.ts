@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { CreateUserDto, UpdateUserDto } from './dtos';
-import { UserRole } from './enums/user-role.enum';
 
 /**
  * EXEMPLE de service Users
@@ -73,7 +72,6 @@ export class UsersService {
       lastLoginAt: new Date(),
     });
   }
-
 
   /**
    * Désactive un compte utilisateur

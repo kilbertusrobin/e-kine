@@ -10,7 +10,8 @@ export class CreateAppointmentDto {
   practitionerId: string;
 
   @ApiProperty({
-    description: 'Date et heure du RDV (ISO 8601). Créneaux: 9h-13h, 14h-17h, toutes les 30min',
+    description:
+      'Date et heure du RDV (ISO 8601). Créneaux: 9h-13h, 14h-17h, toutes les 30min',
     example: '2024-01-15T09:00:00.000Z',
   })
   @IsDateString()

@@ -1,10 +1,4 @@
-import {
-  Controller,
-  Get,
-  Put,
-  Body,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Put, Body, UseGuards } from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
@@ -24,30 +18,47 @@ export class CareTypesController {
   constructor(private readonly careTypesService: CareTypesService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Liste des types de soins', description: 'Route publique' })
-  @ApiResponse({ status: 200, description: 'Liste des types de soins disponibles' })
+  @ApiOperation({
+    summary: 'Liste des types de soins',
+    description: 'Route publique',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Liste des types de soins disponibles',
+  })
   async findAll(): Promise<CareTypeResponseDto[]> {
     const careTypes = await this.careTypesService.findAll();
-    return plainToInstance(CareTypeResponseDto, careTypes, { excludeExtraneousValues: true });
+    return plainToInstance(CareTypeResponseDto, careTypes, {
+      excludeExtraneousValues: true,
+    });
   }
 
   @Get('me')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-auth')
-  @ApiOperation({ summary: 'Mes types de soins', description: 'Types de soins du praticien connecté' })
+  @ApiOperation({
+    summary: 'Mes types de soins',
+    description: 'Types de soins du praticien connecté',
+  })
   @ApiResponse({ status: 200, description: 'Liste des types de soins' })
   @ApiResponse({ status: 401, description: 'Non authentifié' })
   async getMyCareTypes(
     @CurrentUser() user: User,
   ): Promise<CareTypeResponseDto[]> {
     const careTypes = await this.careTypesService.findByUserId(user.id);
-    return plainToInstance(CareTypeResponseDto, careTypes, { excludeExtraneousValues: true });
+    return plainToInstance(CareTypeResponseDto, careTypes, {
+      excludeExtraneousValues: true,
+    });
   }
 
   @Put('me')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-auth')
-  @ApiOperation({ summary: 'Modifier mes types de soins', description: 'Remplace entièrement les types de soins (praticien uniquement)' })
+  @ApiOperation({
+    summary: 'Modifier mes types de soins',
+    description:
+      'Remplace entièrement les types de soins (praticien uniquement)',
+  })
   @ApiResponse({ status: 200, description: 'Types de soins mis à jour' })
   @ApiResponse({ status: 403, description: 'Réservé aux praticiens' })
   async updateMyCareTypes(
@@ -58,6 +69,8 @@ export class CareTypesController {
       user.id,
       updateUserCareTypesDto.careTypeIds,
     );
-    return plainToInstance(CareTypeResponseDto, careTypes, { excludeExtraneousValues: true });
+    return plainToInstance(CareTypeResponseDto, careTypes, {
+      excludeExtraneousValues: true,
+    });
   }
 }

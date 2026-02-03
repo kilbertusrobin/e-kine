@@ -8,7 +8,7 @@ export class UpdateUserDto {
   /**
    * URL de la photo de profil Google
    */
-  @IsUrl({}, { message: 'L\'URL de la photo de profil doit être valide' })
+  @IsUrl({}, { message: "L'URL de la photo de profil doit être valide" })
   @IsOptional()
   googlePicture?: string;
 

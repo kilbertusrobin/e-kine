@@ -22,7 +22,6 @@ import {
 /**
  * Constantes pour les règles métier des créneaux
  */
-const SLOT_DURATION_MINUTES = 30;
 const MORNING_START_HOUR = 9;
 const MORNING_END_HOUR = 13;
 const AFTERNOON_START_HOUR = 14;
@@ -47,7 +46,10 @@ export class AppointmentsService {
   /**
    * Récupère le nom complet d'un utilisateur via son profil
    */
-  private async getUserDisplayName(userId: string, email: string): Promise<string> {
+  private async getUserDisplayName(
+    userId: string,
+    email: string,
+  ): Promise<string> {
     const profile = await this.profileRepository.findOne({
       where: { userId },
     });
@@ -152,7 +154,9 @@ export class AppointmentsService {
   ): Promise<boolean> {
     const query = this.appointmentRepository
       .createQueryBuilder('appointment')
-      .where('appointment.practitioner_id = :practitionerId', { practitionerId })
+      .where('appointment.practitioner_id = :practitionerId', {
+        practitionerId,
+      })
       .andWhere('appointment.date_time = :dateTime', { dateTime })
       .andWhere('appointment.status != :cancelledStatus', {
         cancelledStatus: AppointmentStatus.CANCELLED,
@@ -208,7 +212,9 @@ export class AppointmentsService {
 
     const existingAppointments = await this.appointmentRepository
       .createQueryBuilder('appointment')
-      .where('appointment.practitioner_id = :practitionerId', { practitionerId })
+      .where('appointment.practitioner_id = :practitionerId', {
+        practitionerId,
+      })
       .andWhere('appointment.date_time >= :startOfDay', { startOfDay })
       .andWhere('appointment.date_time <= :endOfDay', { endOfDay })
       .andWhere('appointment.status != :cancelledStatus', {
@@ -252,7 +258,8 @@ export class AppointmentsService {
     createAppointmentDto: CreateAppointmentDto,
     patientId: string,
   ): Promise<Appointment> {
-    const { practitionerId, dateTime, careTypeId, notes } = createAppointmentDto;
+    const { practitionerId, dateTime, careTypeId, notes } =
+      createAppointmentDto;
     const appointmentDate = new Date(dateTime);
 
     // Valider les contraintes du créneau
@@ -260,7 +267,11 @@ export class AppointmentsService {
 
     // Vérifier que le praticien existe et est bien un praticien
     const practitioner = await this.userRepository.findOne({
-      where: { id: practitionerId, role: UserRole.PRACTITIONER, isActive: true },
+      where: {
+        id: practitionerId,
+        role: UserRole.PRACTITIONER,
+        isActive: true,
+      },
     });
 
     if (!practitioner) {
@@ -307,17 +318,20 @@ export class AppointmentsService {
         practitioner.id,
         practitioner.email,
       );
-      const patientName = await this.getUserDisplayName(patient.id, patient.email);
+      const patientName = await this.getUserDisplayName(
+        patient.id,
+        patient.email,
+      );
 
       // Email de confirmation au patient
-      this.mailService.sendAppointmentCreated(
+      void this.mailService.sendAppointmentCreated(
         fullAppointment,
         patient.email,
         practitionerName,
       );
 
       // Email de notification au praticien
-      this.mailService.sendNewAppointmentToPractitioner(
+      void this.mailService.sendNewAppointmentToPractitioner(
         fullAppointment,
         practitioner.email,
         patientName,
@@ -427,7 +441,7 @@ export class AppointmentsService {
       appointment.practitionerId !== userId
     ) {
       throw new ForbiddenException(
-        'Vous n\'êtes pas autorisé à modifier ce rendez-vous',
+        "Vous n'êtes pas autorisé à modifier ce rendez-vous",
       );
     }
 
@@ -484,15 +498,13 @@ export class AppointmentsService {
       appointment.practitionerId !== userId
     ) {
       throw new ForbiddenException(
-        'Vous n\'êtes pas autorisé à annuler ce rendez-vous',
+        "Vous n'êtes pas autorisé à annuler ce rendez-vous",
       );
     }
 
     // Vérifier que le RDV est annulable
     if (!appointment.isCancellable()) {
-      throw new BadRequestException(
-        'Ce rendez-vous ne peut plus être annulé',
-      );
+      throw new BadRequestException('Ce rendez-vous ne peut plus être annulé');
     }
 
     appointment.status = AppointmentStatus.CANCELLED;
@@ -513,7 +525,7 @@ export class AppointmentsService {
         ? appointment.practitioner.email
         : appointment.patient.email;
 
-      this.mailService.sendAppointmentCancelled(
+      void this.mailService.sendAppointmentCancelled(
         appointment,
         recipientEmail,
         cancelledByName,

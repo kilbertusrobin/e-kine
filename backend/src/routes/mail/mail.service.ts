@@ -50,7 +50,9 @@ export class MailService {
 
       this.logger.log(`Email envoyé à ${to}: ${subject}`);
     } catch (error) {
-      this.logger.error(`Erreur envoi email à ${to}: ${error.message}`);
+      this.logger.error(
+        `Erreur envoi email à ${to}: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
       // Ne pas throw pour ne pas bloquer le flux principal
     }
   }

@@ -20,5 +20,6 @@ export const typeOrmConfig: TypeOrmModuleOptions = {
   entities: [User, Session, Profile, Prescription, CareType, Appointment],
   synchronize: process.env.NODE_ENV !== 'production', // ⚠️ Ne pas utiliser en production
   logging: process.env.NODE_ENV === 'development',
-  ssl: process.env.DATABASE_SSL === 'true' ? { rejectUnauthorized: false } : false,
+  ssl:
+    process.env.DATABASE_SSL === 'true' ? { rejectUnauthorized: false } : false,
 };

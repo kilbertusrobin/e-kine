@@ -21,7 +21,8 @@ const dataSource = new DataSource({
   database: process.env.DATABASE_NAME || 'kine_booking',
   entities: [User, Session, Profile, Prescription, CareType, Appointment],
   synchronize: true,
-  ssl: process.env.DATABASE_SSL === 'true' ? { rejectUnauthorized: false } : false,
+  ssl:
+    process.env.DATABASE_SSL === 'true' ? { rejectUnauthorized: false } : false,
 });
 
 async function seed() {
@@ -67,9 +68,13 @@ async function seed() {
       });
       await profileRepo.save(profile);
 
-      console.log(`  + Kiné créé : ${fixture.profile.firstName} ${fixture.profile.lastName} (${fixture.user.email})`);
+      console.log(
+        `  + Kiné créé : ${fixture.profile.firstName} ${fixture.profile.lastName} (${fixture.user.email})`,
+      );
     } else {
-      console.log(`  = Kiné existant : ${fixture.profile.firstName} ${fixture.profile.lastName}`);
+      console.log(
+        `  = Kiné existant : ${fixture.profile.firstName} ${fixture.profile.lastName}`,
+      );
     }
 
     // Associer les CareTypes

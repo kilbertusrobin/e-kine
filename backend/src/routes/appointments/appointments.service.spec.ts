@@ -1,7 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { BadRequestException, ConflictException, ForbiddenException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common';
 import { AppointmentsService } from './appointments.service';
 import { Appointment } from './entities/appointment.entity';
 import { AppointmentStatus } from './enums/appointment-status.enum';
@@ -90,9 +95,15 @@ describe('AppointmentsService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AppointmentsService,
-        { provide: getRepositoryToken(Appointment), useValue: mockAppointmentRepository },
+        {
+          provide: getRepositoryToken(Appointment),
+          useValue: mockAppointmentRepository,
+        },
         { provide: getRepositoryToken(User), useValue: mockUserRepository },
-        { provide: getRepositoryToken(Profile), useValue: mockProfileRepository },
+        {
+          provide: getRepositoryToken(Profile),
+          useValue: mockProfileRepository,
+        },
         { provide: MailService, useValue: mockMailService },
       ],
     }).compile();
@@ -114,7 +125,10 @@ describe('AppointmentsService', () => {
         userRepository.findOne.mockResolvedValue(mockPractitioner as User);
 
         // Act
-        const result = await service.getAvailableSlots('practitioner-uuid', futureSaturday);
+        const result = await service.getAvailableSlots(
+          'practitioner-uuid',
+          futureSaturday,
+        );
 
         // Assert
         expect(result.availableSlots).toEqual([]);
@@ -130,10 +144,15 @@ describe('AppointmentsService', () => {
           andWhere: jest.fn().mockReturnThis(),
           getMany: jest.fn().mockResolvedValue([]),
         };
-        appointmentRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder as any);
+        appointmentRepository.createQueryBuilder.mockReturnValue(
+          mockQueryBuilder as any,
+        );
 
         // Act
-        const result = await service.getAvailableSlots('practitioner-uuid', futureMonday);
+        const result = await service.getAvailableSlots(
+          'practitioner-uuid',
+          futureMonday,
+        );
 
         // Assert
         // 9h-13h = 8 créneaux (9h, 9h30, 10h, 10h30, 11h, 11h30, 12h, 12h30)
@@ -141,7 +160,7 @@ describe('AppointmentsService', () => {
         expect(result.allSlots.length).toBe(14);
       });
 
-      it('devrait lever une erreur si le praticien n\'existe pas', async () => {
+      it("devrait lever une erreur si le praticien n'existe pas", async () => {
         // Arrange
         userRepository.findOne.mockResolvedValue(null);
 
@@ -174,17 +193,26 @@ describe('AppointmentsService', () => {
           andWhere: jest.fn().mockReturnThis(),
           getOne: jest.fn().mockResolvedValue(null), // Pas de conflit
         };
-        appointmentRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder as any);
+        appointmentRepository.createQueryBuilder.mockReturnValue(
+          mockQueryBuilder as any,
+        );
 
-        appointmentRepository.create.mockReturnValue(mockAppointment as Appointment);
-        appointmentRepository.save.mockResolvedValue(mockAppointment as Appointment);
+        appointmentRepository.create.mockReturnValue(
+          mockAppointment as Appointment,
+        );
+        appointmentRepository.save.mockResolvedValue(
+          mockAppointment as Appointment,
+        );
         appointmentRepository.findOne.mockResolvedValue({
           ...mockAppointment,
           practitioner: mockPractitioner,
           patient: mockPatient,
         } as Appointment);
 
-        profileRepository.findOne.mockResolvedValue({ firstName: 'John', lastName: 'Doe' } as Profile);
+        profileRepository.findOne.mockResolvedValue({
+          firstName: 'John',
+          lastName: 'Doe',
+        } as Profile);
 
         // Act
         const result = await service.create(createDto, 'patient-uuid');
@@ -253,7 +281,9 @@ describe('AppointmentsService', () => {
           andWhere: jest.fn().mockReturnThis(),
           getOne: jest.fn().mockResolvedValue(mockAppointment), // Conflit !
         };
-        appointmentRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder as any);
+        appointmentRepository.createQueryBuilder.mockReturnValue(
+          mockQueryBuilder as any,
+        );
 
         // Act & Assert
         await expect(service.create(createDto, 'patient-uuid')).rejects.toThrow(
@@ -281,7 +311,10 @@ describe('AppointmentsService', () => {
           status: AppointmentStatus.CANCELLED,
         } as Appointment);
 
-        profileRepository.findOne.mockResolvedValue({ firstName: 'John', lastName: 'Doe' } as Profile);
+        profileRepository.findOne.mockResolvedValue({
+          firstName: 'John',
+          lastName: 'Doe',
+        } as Profile);
 
         // Act
         const result = await service.cancel('appointment-uuid', 'patient-uuid');
@@ -290,7 +323,7 @@ describe('AppointmentsService', () => {
         expect(result.status).toBe(AppointmentStatus.CANCELLED);
       });
 
-      it('devrait rejeter l\'annulation par un utilisateur non autorisé', async () => {
+      it("devrait rejeter l'annulation par un utilisateur non autorisé", async () => {
         // Arrange
         appointmentRepository.findOne.mockResolvedValue({
           ...mockAppointment,
@@ -304,7 +337,7 @@ describe('AppointmentsService', () => {
         ).rejects.toThrow(ForbiddenException);
       });
 
-      it('devrait rejeter l\'annulation d\'un RDV déjà annulé', async () => {
+      it("devrait rejeter l'annulation d'un RDV déjà annulé", async () => {
         // Arrange
         appointmentRepository.findOne.mockResolvedValue({
           ...mockAppointment,
@@ -325,7 +358,7 @@ describe('AppointmentsService', () => {
   // ============================================================
   // COMMUNICATION BASED TESTS - Envoi d'emails
   // ============================================================
-  describe('Envoi d\'emails (Communication Based)', () => {
+  describe("Envoi d'emails (Communication Based)", () => {
     describe('create', () => {
       it('devrait envoyer un email au patient lors de la création', async () => {
         // Arrange
@@ -343,17 +376,26 @@ describe('AppointmentsService', () => {
           andWhere: jest.fn().mockReturnThis(),
           getOne: jest.fn().mockResolvedValue(null),
         };
-        appointmentRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder as any);
+        appointmentRepository.createQueryBuilder.mockReturnValue(
+          mockQueryBuilder as any,
+        );
 
-        appointmentRepository.create.mockReturnValue(mockAppointment as Appointment);
-        appointmentRepository.save.mockResolvedValue(mockAppointment as Appointment);
+        appointmentRepository.create.mockReturnValue(
+          mockAppointment as Appointment,
+        );
+        appointmentRepository.save.mockResolvedValue(
+          mockAppointment as Appointment,
+        );
         appointmentRepository.findOne.mockResolvedValue({
           ...mockAppointment,
           practitioner: mockPractitioner,
           patient: mockPatient,
         } as Appointment);
 
-        profileRepository.findOne.mockResolvedValue({ firstName: 'John', lastName: 'Doe' } as Profile);
+        profileRepository.findOne.mockResolvedValue({
+          firstName: 'John',
+          lastName: 'Doe',
+        } as Profile);
 
         // Act
         await service.create(createDto, 'patient-uuid');
@@ -382,23 +424,34 @@ describe('AppointmentsService', () => {
           andWhere: jest.fn().mockReturnThis(),
           getOne: jest.fn().mockResolvedValue(null),
         };
-        appointmentRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder as any);
+        appointmentRepository.createQueryBuilder.mockReturnValue(
+          mockQueryBuilder as any,
+        );
 
-        appointmentRepository.create.mockReturnValue(mockAppointment as Appointment);
-        appointmentRepository.save.mockResolvedValue(mockAppointment as Appointment);
+        appointmentRepository.create.mockReturnValue(
+          mockAppointment as Appointment,
+        );
+        appointmentRepository.save.mockResolvedValue(
+          mockAppointment as Appointment,
+        );
         appointmentRepository.findOne.mockResolvedValue({
           ...mockAppointment,
           practitioner: mockPractitioner,
           patient: mockPatient,
         } as Appointment);
 
-        profileRepository.findOne.mockResolvedValue({ firstName: 'John', lastName: 'Doe' } as Profile);
+        profileRepository.findOne.mockResolvedValue({
+          firstName: 'John',
+          lastName: 'Doe',
+        } as Profile);
 
         // Act
         await service.create(createDto, 'patient-uuid');
 
         // Assert
-        expect(mailService.sendNewAppointmentToPractitioner).toHaveBeenCalledWith(
+        expect(
+          mailService.sendNewAppointmentToPractitioner,
+        ).toHaveBeenCalledWith(
           expect.any(Object),
           'practitioner@test.com',
           expect.any(String),
@@ -407,7 +460,7 @@ describe('AppointmentsService', () => {
     });
 
     describe('cancel', () => {
-      it('devrait envoyer un email à l\'autre partie lors de l\'annulation', async () => {
+      it("devrait envoyer un email à l'autre partie lors de l'annulation", async () => {
         // Arrange
         const appointmentToCancel = {
           ...mockAppointment,
@@ -423,7 +476,10 @@ describe('AppointmentsService', () => {
           status: AppointmentStatus.CANCELLED,
         } as Appointment);
 
-        profileRepository.findOne.mockResolvedValue({ firstName: 'John', lastName: 'Doe' } as Profile);
+        profileRepository.findOne.mockResolvedValue({
+          firstName: 'John',
+          lastName: 'Doe',
+        } as Profile);
 
         // Act
         await service.cancel('appointment-uuid', 'patient-uuid');
@@ -456,12 +512,19 @@ describe('AppointmentsService', () => {
             ...mockAppointment,
             id: 'appointment-2-uuid',
             practitioner: mockPractitioner,
-            patient: { ...mockPatient, id: 'patient-2-uuid', email: 'patient2@test.com' },
+            patient: {
+              ...mockPatient,
+              id: 'patient-2-uuid',
+              email: 'patient2@test.com',
+            },
           },
         ] as Appointment[];
 
         appointmentRepository.find.mockResolvedValue(tomorrowAppointments);
-        profileRepository.findOne.mockResolvedValue({ firstName: 'Dr', lastName: 'Smith' } as Profile);
+        profileRepository.findOne.mockResolvedValue({
+          firstName: 'Dr',
+          lastName: 'Smith',
+        } as Profile);
 
         // Act
         const count = await service.sendTomorrowReminders();

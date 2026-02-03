@@ -56,7 +56,10 @@ describe('CareTypesService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CareTypesService,
-        { provide: getRepositoryToken(CareType), useValue: mockCareTypeRepository },
+        {
+          provide: getRepositoryToken(CareType),
+          useValue: mockCareTypeRepository,
+        },
         { provide: getRepositoryToken(User), useValue: mockUserRepository },
       ],
     }).compile();
@@ -98,9 +101,11 @@ describe('CareTypesService', () => {
     });
 
     describe('findById', () => {
-      it('devrait retourner le type de soin correspondant à l\'ID', async () => {
+      it("devrait retourner le type de soin correspondant à l'ID", async () => {
         // Arrange
-        careTypeRepository.findOne.mockResolvedValue(mockCareTypes[0] as CareType);
+        careTypeRepository.findOne.mockResolvedValue(
+          mockCareTypes[0] as CareType,
+        );
 
         // Act
         const result = await service.findById('care-type-1');
@@ -109,7 +114,7 @@ describe('CareTypesService', () => {
         expect(result).toEqual(mockCareTypes[0]);
       });
 
-      it('devrait retourner null si le type de soin n\'existe pas', async () => {
+      it("devrait retourner null si le type de soin n'existe pas", async () => {
         // Arrange
         careTypeRepository.findOne.mockResolvedValue(null);
 
@@ -128,7 +133,9 @@ describe('CareTypesService', () => {
           ...mockPractitioner,
           careTypes: mockCareTypes,
         };
-        userRepository.findOne.mockResolvedValue(practitionerWithCareTypes as User);
+        userRepository.findOne.mockResolvedValue(
+          practitionerWithCareTypes as User,
+        );
 
         // Act
         const result = await service.findByUserId('practitioner-uuid');
@@ -137,7 +144,7 @@ describe('CareTypesService', () => {
         expect(result).toEqual(mockCareTypes);
       });
 
-      it('devrait retourner un tableau vide si le praticien n\'a pas de types de soins', async () => {
+      it("devrait retourner un tableau vide si le praticien n'a pas de types de soins", async () => {
         // Arrange
         userRepository.findOne.mockResolvedValue(mockPractitioner as User);
 
@@ -148,7 +155,7 @@ describe('CareTypesService', () => {
         expect(result).toEqual([]);
       });
 
-      it('devrait lever une erreur si l\'utilisateur n\'existe pas', async () => {
+      it("devrait lever une erreur si l'utilisateur n'existe pas", async () => {
         // Arrange
         userRepository.findOne.mockResolvedValue(null);
 
@@ -182,7 +189,10 @@ describe('CareTypesService', () => {
         } as User);
 
         // Act
-        const result = await service.updateUserCareTypes('practitioner-uuid', careTypeIds);
+        const result = await service.updateUserCareTypes(
+          'practitioner-uuid',
+          careTypeIds,
+        );
 
         // Assert
         expect(result).toHaveLength(2);
@@ -208,7 +218,10 @@ describe('CareTypesService', () => {
         } as User);
 
         // Act
-        const result = await service.updateUserCareTypes('practitioner-uuid', []);
+        const result = await service.updateUserCareTypes(
+          'practitioner-uuid',
+          [],
+        );
 
         // Assert
         expect(result).toEqual([]);
@@ -219,7 +232,7 @@ describe('CareTypesService', () => {
         );
       });
 
-      it('devrait rejeter si l\'utilisateur n\'est pas un praticien', async () => {
+      it("devrait rejeter si l'utilisateur n'est pas un praticien", async () => {
         // Arrange
         userRepository.findOne.mockResolvedValue(mockPatient as User);
 
@@ -229,18 +242,23 @@ describe('CareTypesService', () => {
         ).rejects.toThrow(ForbiddenException);
       });
 
-      it('devrait rejeter si un type de soin n\'existe pas', async () => {
+      it("devrait rejeter si un type de soin n'existe pas", async () => {
         // Arrange
         userRepository.findOne.mockResolvedValue(mockPractitioner as User);
-        careTypeRepository.find.mockResolvedValue([mockCareTypes[0]] as CareType[]); // Seulement 1 sur 2
+        careTypeRepository.find.mockResolvedValue([
+          mockCareTypes[0],
+        ] as CareType[]); // Seulement 1 sur 2
 
         // Act & Assert
         await expect(
-          service.updateUserCareTypes('practitioner-uuid', ['care-type-1', 'unknown-id']),
+          service.updateUserCareTypes('practitioner-uuid', [
+            'care-type-1',
+            'unknown-id',
+          ]),
         ).rejects.toThrow(NotFoundException);
       });
 
-      it('devrait rejeter si l\'utilisateur n\'existe pas', async () => {
+      it("devrait rejeter si l'utilisateur n'existe pas", async () => {
         // Arrange
         userRepository.findOne.mockResolvedValue(null);
 
@@ -265,14 +283,19 @@ describe('CareTypesService', () => {
         ...mockPractitioner,
         careTypes: existingCareTypes,
       } as User);
-      careTypeRepository.find.mockResolvedValue([mockCareTypes[2]] as CareType[]);
+      careTypeRepository.find.mockResolvedValue([
+        mockCareTypes[2],
+      ] as CareType[]);
       userRepository.save.mockResolvedValue({
         ...mockPractitioner,
         careTypes: [mockCareTypes[2]],
       } as User);
 
       // Act
-      const result = await service.updateUserCareTypes('practitioner-uuid', newCareTypeIds);
+      const result = await service.updateUserCareTypes(
+        'practitioner-uuid',
+        newCareTypeIds,
+      );
 
       // Assert
       expect(result).toHaveLength(1);

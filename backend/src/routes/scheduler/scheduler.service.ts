@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { Cron } from '@nestjs/schedule';
 import { AppointmentsService } from '../appointments/appointments.service';
 
 /**
@@ -26,7 +26,9 @@ export class SchedulerService {
       const sentCount = await this.appointmentsService.sendTomorrowReminders();
       this.logger.log(`Rappels J-1 envoyés: ${sentCount} emails`);
     } catch (error) {
-      this.logger.error(`Erreur lors de l'envoi des rappels: ${error.message}`);
+      this.logger.error(
+        `Erreur lors de l'envoi des rappels: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
     }
   }
 }

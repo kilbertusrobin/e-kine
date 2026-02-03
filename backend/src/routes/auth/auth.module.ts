@@ -28,7 +28,7 @@ import { SessionsModule } from '../sessions/sessions.module';
         return {
           secret: configService.get<string>('JWT_SECRET'),
           signOptions: {
-            expiresIn: expiresIn as any,
+            expiresIn,
           },
         };
       },
@@ -41,11 +41,7 @@ import { SessionsModule } from '../sessions/sessions.module';
     SessionsModule,
   ],
   controllers: [AuthController],
-  providers: [
-    AuthService,
-    GoogleStrategy,
-    JwtStrategy,
-  ],
+  providers: [AuthService, GoogleStrategy, JwtStrategy],
   exports: [AuthService, JwtModule, PassportModule],
 })
 export class AuthModule {}

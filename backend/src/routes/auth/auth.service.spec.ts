@@ -40,16 +40,6 @@ describe('AuthService', () => {
     canLogin: jest.fn().mockReturnValue(true),
   };
 
-  const mockPractitioner: Partial<User> = {
-    id: 'practitioner-uuid',
-    email: 'practitioner@e-kine.fr',
-    googleId: 'google-456',
-    role: UserRole.PRACTITIONER,
-    isActive: true,
-    emailVerified: true,
-    canLogin: jest.fn().mockReturnValue(true),
-  };
-
   const mockDisabledUser: Partial<User> = {
     ...mockUser,
     id: 'disabled-uuid',
@@ -103,7 +93,10 @@ describe('AuthService', () => {
       providers: [
         AuthService,
         { provide: getRepositoryToken(User), useValue: mockUserRepository },
-        { provide: getRepositoryToken(Profile), useValue: mockProfileRepository },
+        {
+          provide: getRepositoryToken(Profile),
+          useValue: mockProfileRepository,
+        },
         { provide: JwtService, useValue: mockJwtService },
         { provide: SessionsService, useValue: mockSessionsService },
         { provide: ConfigService, useValue: mockConfigService },
@@ -159,7 +152,7 @@ describe('AuthService', () => {
         expect(result.accessToken).toBeDefined();
       });
 
-      it('devrait rejeter si l\'email est déjà utilisé par un autre compte', async () => {
+      it("devrait rejeter si l'email est déjà utilisé par un autre compte", async () => {
         // Arrange
         userRepository.findOne
           .mockResolvedValueOnce(null) // Pas de user avec ce googleId
@@ -189,7 +182,11 @@ describe('AuthService', () => {
         sessionsService.create.mockResolvedValue(mockSession as any);
 
         // Act
-        await service.handleGoogleAuth(mockGoogleProfile, deviceInfo, ipAddress);
+        await service.handleGoogleAuth(
+          mockGoogleProfile,
+          deviceInfo,
+          ipAddress,
+        );
 
         // Assert
         expect(sessionsService.create).toHaveBeenCalledWith(
@@ -247,7 +244,9 @@ describe('AuthService', () => {
     describe('refreshAccessToken', () => {
       it('devrait rafraîchir le token avec un refresh token valide', async () => {
         // Arrange
-        sessionsService.findByRefreshToken.mockResolvedValue(mockSession as any);
+        sessionsService.findByRefreshToken.mockResolvedValue(
+          mockSession as any,
+        );
         userRepository.findOne.mockResolvedValue(mockUser as User);
         sessionsService.refresh.mockResolvedValue({
           ...mockSession,
@@ -278,7 +277,9 @@ describe('AuthService', () => {
           ...mockSession,
           isExpired: jest.fn().mockReturnValue(true),
         };
-        sessionsService.findByRefreshToken.mockResolvedValue(expiredSession as any);
+        sessionsService.findByRefreshToken.mockResolvedValue(
+          expiredSession as any,
+        );
 
         // Act & Assert
         await expect(
@@ -287,9 +288,11 @@ describe('AuthService', () => {
         expect(sessionsService.delete).toHaveBeenCalledWith('expired-token');
       });
 
-      it('devrait rejeter si l\'utilisateur ne peut plus se connecter', async () => {
+      it("devrait rejeter si l'utilisateur ne peut plus se connecter", async () => {
         // Arrange
-        sessionsService.findByRefreshToken.mockResolvedValue(mockSession as any);
+        sessionsService.findByRefreshToken.mockResolvedValue(
+          mockSession as any,
+        );
         userRepository.findOne.mockResolvedValue(mockDisabledUser as User);
 
         // Act & Assert
@@ -300,7 +303,9 @@ describe('AuthService', () => {
 
       it('devrait rejeter si le renouvellement de session échoue', async () => {
         // Arrange
-        sessionsService.findByRefreshToken.mockResolvedValue(mockSession as any);
+        sessionsService.findByRefreshToken.mockResolvedValue(
+          mockSession as any,
+        );
         userRepository.findOne.mockResolvedValue(mockUser as User);
         sessionsService.refresh.mockResolvedValue(null);
 
@@ -325,7 +330,9 @@ describe('AuthService', () => {
         await service.logout('refresh-token-123');
 
         // Assert
-        expect(sessionsService.delete).toHaveBeenCalledWith('refresh-token-123');
+        expect(sessionsService.delete).toHaveBeenCalledWith(
+          'refresh-token-123',
+        );
       });
     });
 
@@ -338,7 +345,9 @@ describe('AuthService', () => {
         await service.logoutAll('user-uuid');
 
         // Assert
-        expect(sessionsService.deleteAllByUserId).toHaveBeenCalledWith('user-uuid');
+        expect(sessionsService.deleteAllByUserId).toHaveBeenCalledWith(
+          'user-uuid',
+        );
       });
     });
   });

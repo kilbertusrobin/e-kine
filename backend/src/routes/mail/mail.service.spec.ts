@@ -22,7 +22,6 @@ jest.mock('nodemailer', () => ({
  */
 describe('MailService', () => {
   let service: MailService;
-  let configService: jest.Mocked<ConfigService>;
 
   // Mock data
   const mockAppointment: Partial<Appointment> = {
@@ -66,13 +65,12 @@ describe('MailService', () => {
     }).compile();
 
     service = module.get<MailService>(MailService);
-    configService = module.get(ConfigService);
   });
 
   // ============================================================
   // COMMUNICATION BASED TESTS - Envoi d'emails
   // ============================================================
-  describe('Envoi d\'emails (Communication Based)', () => {
+  describe("Envoi d'emails (Communication Based)", () => {
     describe('sendAppointmentCreated', () => {
       it('devrait envoyer un email de confirmation au patient', async () => {
         // Arrange
@@ -97,7 +95,7 @@ describe('MailService', () => {
         );
       });
 
-      it('devrait inclure les informations du praticien dans l\'email', async () => {
+      it("devrait inclure les informations du praticien dans l'email", async () => {
         // Arrange
         const practitionerName = 'Dr. Dupont';
 
@@ -116,7 +114,7 @@ describe('MailService', () => {
         );
       });
 
-      it('devrait inclure le type de soin dans l\'email', async () => {
+      it("devrait inclure le type de soin dans l'email", async () => {
         // Arrange & Act
         await service.sendAppointmentCreated(
           mockAppointment as Appointment,
@@ -148,7 +146,7 @@ describe('MailService', () => {
         );
       });
 
-      it('ne devrait pas lever d\'erreur en cas d\'échec d\'envoi', async () => {
+      it("ne devrait pas lever d'erreur en cas d'échec d'envoi", async () => {
         // Arrange
         mockSendMail.mockRejectedValue(new Error('SMTP error'));
 
@@ -164,7 +162,7 @@ describe('MailService', () => {
     });
 
     describe('sendNewAppointmentToPractitioner', () => {
-      it('devrait envoyer un email au praticien lors d\'un nouveau RDV', async () => {
+      it("devrait envoyer un email au praticien lors d'un nouveau RDV", async () => {
         // Arrange
         const practitionerEmail = 'practitioner@test.com';
         const patientName = 'Jean Dupont';
@@ -187,7 +185,7 @@ describe('MailService', () => {
         );
       });
 
-      it('devrait inclure le nom du patient dans l\'email', async () => {
+      it("devrait inclure le nom du patient dans l'email", async () => {
         // Arrange
         const patientName = 'Marie Curie';
 
@@ -244,7 +242,7 @@ describe('MailService', () => {
     });
 
     describe('sendAppointmentCancelled', () => {
-      it('devrait envoyer un email d\'annulation', async () => {
+      it("devrait envoyer un email d'annulation", async () => {
         // Arrange
         const recipientEmail = 'recipient@test.com';
         const cancelledByName = 'Jean Dupont';
@@ -353,7 +351,7 @@ describe('MailService', () => {
   // ============================================================
   describe('Configuration des emails (Output Based)', () => {
     describe('sendMail (via sendAppointmentCreated)', () => {
-      it('devrait utiliser l\'adresse from configurée', async () => {
+      it("devrait utiliser l'adresse from configurée", async () => {
         // Arrange & Act
         await service.sendAppointmentCreated(
           mockAppointment as Appointment,
@@ -391,7 +389,7 @@ describe('MailService', () => {
   // TESTS DE RÉSILIENCE
   // ============================================================
   describe('Résilience aux erreurs (Communication Based)', () => {
-    it('devrait continuer même si l\'envoi échoue pour sendNewAppointmentToPractitioner', async () => {
+    it("devrait continuer même si l'envoi échoue pour sendNewAppointmentToPractitioner", async () => {
       // Arrange
       mockSendMail.mockRejectedValue(new Error('Connection refused'));
 
@@ -405,7 +403,7 @@ describe('MailService', () => {
       ).resolves.not.toThrow();
     });
 
-    it('devrait continuer même si l\'envoi échoue pour sendAppointmentCancelled', async () => {
+    it("devrait continuer même si l'envoi échoue pour sendAppointmentCancelled", async () => {
       // Arrange
       mockSendMail.mockRejectedValue(new Error('Timeout'));
 
@@ -420,7 +418,7 @@ describe('MailService', () => {
       ).resolves.not.toThrow();
     });
 
-    it('devrait continuer même si l\'envoi échoue pour sendAppointmentReminder', async () => {
+    it("devrait continuer même si l'envoi échoue pour sendAppointmentReminder", async () => {
       // Arrange
       mockSendMail.mockRejectedValue(new Error('Invalid recipient'));
 

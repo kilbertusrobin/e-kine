@@ -36,7 +36,10 @@ export class AuthController {
 
   @Get('google')
   @UseGuards(GoogleAuthGuard)
-  @ApiOperation({ summary: 'Login Google', description: 'Redirige vers Google OAuth' })
+  @ApiOperation({
+    summary: 'Login Google',
+    description: 'Redirige vers Google OAuth',
+  })
   @ApiResponse({ status: 302, description: 'Redirection vers Google' })
   async googleAuth() {
     // Le guard redirige vers Google
@@ -46,7 +49,11 @@ export class AuthController {
   @UseGuards(GoogleAuthGuard)
   @ApiExcludeEndpoint()
   async googleAuthCallback(@Req() req: Request, @Res() res: Response) {
-    const googleUser = req.user as any;
+    const googleUser = req.user as {
+      sub: string;
+      email: string;
+      picture?: string;
+    };
     const deviceInfo = req.headers['user-agent'];
     const ipAddress = req.ip;
 
@@ -62,7 +69,8 @@ export class AuthController {
       );
 
       const frontendUrl = this.configService.get<string>('FRONTEND_URL');
-      const redirectUrl = `${frontendUrl}/auth/callback?` +
+      const redirectUrl =
+        `${frontendUrl}/auth/callback?` +
         `accessToken=${authResponse.accessToken}&` +
         `refreshToken=${authResponse.refreshToken}&` +
         `role=${authResponse.user.role}`;
@@ -70,7 +78,9 @@ export class AuthController {
       return res.redirect(redirectUrl);
     } catch (error) {
       const frontendUrl = this.configService.get<string>('FRONTEND_URL');
-      const errorMessage = encodeURIComponent(error.message);
+      const errorMessage = encodeURIComponent(
+        error instanceof Error ? error.message : 'Unknown error',
+      );
       return res.redirect(`${frontendUrl}/auth/error?message=${errorMessage}`);
     }
   }
@@ -112,7 +122,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Utilisateur connecté' })
   @ApiResponse({ status: 200, description: 'Informations utilisateur' })
   @ApiResponse({ status: 401, description: 'Non authentifié' })
-  async getProfile(@CurrentUser() user: User) {
+  getProfile(@CurrentUser() user: User) {
     return plainToInstance(UserResponseDto, user, {
       excludeExtraneousValues: true,
     });
@@ -121,9 +131,9 @@ export class AuthController {
   @Get('status')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-auth')
-  @ApiOperation({ summary: 'Statut d\'authentification' })
+  @ApiOperation({ summary: "Statut d'authentification" })
   @ApiResponse({ status: 200, description: 'Statut' })
-  async getStatus(@CurrentUser() user: User) {
+  getStatus(@CurrentUser() user: User) {
     return {
       authenticated: true,
       role: user.role,
@@ -137,10 +147,7 @@ export class AuthController {
   @ApiBody({ schema: { properties: { email: { type: 'string' } } } })
   @ApiResponse({ status: 200, description: 'Connexion réussie' })
   @ApiResponse({ status: 401, description: 'Utilisateur non trouvé' })
-  async devLogin(
-    @Body('email') email: string,
-    @Req() req: Request,
-  ) {
+  async devLogin(@Body('email') email: string, @Req() req: Request) {
     const deviceInfo = req.headers['user-agent'];
     const ipAddress = req.ip;
     return this.authService.devLogin(email, deviceInfo, ipAddress);

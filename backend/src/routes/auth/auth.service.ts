@@ -90,13 +90,11 @@ export class AuthService {
    * Le rôle est déterminé automatiquement selon la whitelist
    * Crée également un profil vide lié à l'utilisateur
    */
-  private async register(
-    googleProfile: {
-      sub: string;
-      email: string;
-      picture?: string;
-    },
-  ): Promise<User> {
+  private async register(googleProfile: {
+    sub: string;
+    email: string;
+    picture?: string;
+  }): Promise<User> {
     // Détermine le rôle selon la whitelist
     const role = isPractitionerEmail(googleProfile.email)
       ? UserRole.PRACTITIONER
@@ -115,7 +113,7 @@ export class AuthService {
 
     // Crée un profil lié à l'utilisateur
     // Pour les praticiens, pré-remplit address, city et pc avec "-"
-    const profileData: any = {
+    const profileData: Partial<Profile> = {
       userId: savedUser.id,
     };
 
@@ -250,7 +248,9 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new UnauthorizedException(`Utilisateur avec l'email ${email} non trouvé`);
+      throw new UnauthorizedException(
+        `Utilisateur avec l'email ${email} non trouvé`,
+      );
     }
 
     if (!user.canLogin()) {

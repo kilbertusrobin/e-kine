@@ -17,8 +17,12 @@ export class PrescriptionsService {
   /**
    * Crée une nouvelle ordonnance
    */
-  async create(createPrescriptionDto: CreatePrescriptionDto): Promise<Prescription> {
-    const prescription = this.prescriptionRepository.create(createPrescriptionDto);
+  async create(
+    createPrescriptionDto: CreatePrescriptionDto,
+  ): Promise<Prescription> {
+    const prescription = this.prescriptionRepository.create(
+      createPrescriptionDto,
+    );
     return this.prescriptionRepository.save(prescription);
   }
 
@@ -56,7 +60,10 @@ export class PrescriptionsService {
   /**
    * Met à jour une ordonnance
    */
-  async update(id: string, updatePrescriptionDto: UpdatePrescriptionDto): Promise<Prescription> {
+  async update(
+    id: string,
+    updatePrescriptionDto: UpdatePrescriptionDto,
+  ): Promise<Prescription> {
     const prescription = await this.findById(id);
 
     if (!prescription) {

@@ -31,7 +31,10 @@ export class ProfilesController {
   constructor(private readonly profilesService: ProfilesService) {}
 
   @Get('me')
-  @ApiOperation({ summary: 'Mon profil', description: 'Récupère le profil de l\'utilisateur connecté' })
+  @ApiOperation({
+    summary: 'Mon profil',
+    description: "Récupère le profil de l'utilisateur connecté",
+  })
   @ApiResponse({ status: 200, description: 'Profil trouvé' })
   @ApiResponse({ status: 401, description: 'Non authentifié' })
   async getMyProfile(@CurrentUser() user: User) {

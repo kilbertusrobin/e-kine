@@ -20,9 +20,17 @@ export interface GoogleProfile {
  * Gère l'authentification via Google
  * Le rôle (patient/praticien) est déterminé automatiquement via whitelist d'emails
  */
+interface GooglePassportProfile {
+  id: string;
+  emails: Array<{ value: string; verified: boolean }>;
+  photos?: Array<{ value: string }>;
+  name?: { givenName?: string; familyName?: string };
+}
+
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
-  constructor(private configService: ConfigService) {
+  constructor(configService: ConfigService) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     super({
       clientID: configService.get<string>('GOOGLE_CLIENT_ID'),
       clientSecret: configService.get<string>('GOOGLE_CLIENT_SECRET'),
@@ -38,12 +46,12 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
    * @param profile - Profil utilisateur Google
    * @param done - Callback Passport
    */
-  async validate(
+  validate(
     accessToken: string,
     refreshToken: string,
-    profile: any,
+    profile: GooglePassportProfile,
     done: VerifyCallback,
-  ): Promise<any> {
+  ): void {
     const { id, emails, photos, name } = profile;
 
     // Extraction des données Google
@@ -56,6 +64,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       family_name: name?.familyName,
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     done(null, googleProfile);
   }
 }

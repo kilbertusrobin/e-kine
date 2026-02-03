@@ -53,7 +53,10 @@ describe('ProfilesService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ProfilesService,
-        { provide: getRepositoryToken(Profile), useValue: mockProfileRepository },
+        {
+          provide: getRepositoryToken(Profile),
+          useValue: mockProfileRepository,
+        },
       ],
     }).compile();
 
@@ -87,7 +90,7 @@ describe('ProfilesService', () => {
   // ============================================================
   describe('Récupération de profils (Output Based)', () => {
     describe('findById', () => {
-      it('devrait retourner le profil correspondant à l\'ID', async () => {
+      it("devrait retourner le profil correspondant à l'ID", async () => {
         // Arrange
         profileRepository.findOne.mockResolvedValue(mockProfile as Profile);
 
@@ -102,7 +105,7 @@ describe('ProfilesService', () => {
         });
       });
 
-      it('devrait retourner null si le profil n\'existe pas', async () => {
+      it("devrait retourner null si le profil n'existe pas", async () => {
         // Arrange
         profileRepository.findOne.mockResolvedValue(null);
 
@@ -115,7 +118,7 @@ describe('ProfilesService', () => {
     });
 
     describe('findByUserId', () => {
-      it('devrait retourner le profil de l\'utilisateur', async () => {
+      it("devrait retourner le profil de l'utilisateur", async () => {
         // Arrange
         profileRepository.findOne.mockResolvedValue(mockProfile as Profile);
 
@@ -130,7 +133,7 @@ describe('ProfilesService', () => {
         });
       });
 
-      it('devrait retourner null si l\'utilisateur n\'a pas de profil', async () => {
+      it("devrait retourner null si l'utilisateur n'a pas de profil", async () => {
         // Arrange
         profileRepository.findOne.mockResolvedValue(null);
 
@@ -157,7 +160,10 @@ describe('ProfilesService', () => {
         profileRepository.update.mockResolvedValue({ affected: 1 } as any);
 
         // Act
-        const result = await service.update('profile-uuid', mockUpdateDto as any);
+        const result = await service.update(
+          'profile-uuid',
+          mockUpdateDto as any,
+        );
 
         // Assert
         expect(result.firstName).toBe('Pierre');
@@ -167,7 +173,7 @@ describe('ProfilesService', () => {
         );
       });
 
-      it('devrait lever une erreur si le profil n\'existe pas', async () => {
+      it("devrait lever une erreur si le profil n'existe pas", async () => {
         // Arrange
         profileRepository.findOne.mockResolvedValue(null);
 
@@ -188,13 +194,16 @@ describe('ProfilesService', () => {
         profileRepository.update.mockResolvedValue({ affected: 1 } as any);
 
         // Act
-        const result = await service.updateByUserId('user-uuid', mockUpdateDto as any);
+        const result = await service.updateByUserId(
+          'user-uuid',
+          mockUpdateDto as any,
+        );
 
         // Assert
         expect(result.firstName).toBe('Pierre');
       });
 
-      it('devrait lever une erreur si le profil de l\'utilisateur n\'existe pas', async () => {
+      it("devrait lever une erreur si le profil de l'utilisateur n'existe pas", async () => {
         // Arrange
         profileRepository.findOne.mockResolvedValue(null);
 
@@ -236,7 +245,7 @@ describe('ProfilesService', () => {
         expect(profileRepository.delete).toHaveBeenCalledWith('profile-uuid');
       });
 
-      it('ne devrait rien faire si le profil n\'existe pas', async () => {
+      it("ne devrait rien faire si le profil n'existe pas", async () => {
         // Arrange
         profileRepository.findOne.mockResolvedValue(null);
 

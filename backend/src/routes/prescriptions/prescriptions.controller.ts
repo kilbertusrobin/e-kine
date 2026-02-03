@@ -14,7 +14,11 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { PrescriptionsService } from './prescriptions.service';
-import { CreatePrescriptionDto, UpdatePrescriptionDto, PrescriptionResponseDto } from './dtos';
+import {
+  CreatePrescriptionDto,
+  UpdatePrescriptionDto,
+  PrescriptionResponseDto,
+} from './dtos';
 import { JwtAuthGuard } from '../auth/guards';
 import { CurrentUser } from '../auth/decorators';
 import { User } from '../users/entities/user.entity';
@@ -59,7 +63,9 @@ export class PrescriptionsController {
       userId: user.id,
     };
 
-    const prescription = await this.prescriptionsService.create(createPrescriptionDto);
+    const prescription = await this.prescriptionsService.create(
+      createPrescriptionDto,
+    );
     return plainToInstance(PrescriptionResponseDto, prescription, {
       excludeExtraneousValues: true,
     });
@@ -82,7 +88,9 @@ export class PrescriptionsController {
    * Récupère les ordonnances de l'utilisateur authentifié
    */
   @Get('me')
-  async getMyPrescriptions(@CurrentUser() user: User): Promise<PrescriptionResponseDto[]> {
+  async getMyPrescriptions(
+    @CurrentUser() user: User,
+  ): Promise<PrescriptionResponseDto[]> {
     const prescriptions = await this.prescriptionsService.findByUserId(user.id);
     return plainToInstance(PrescriptionResponseDto, prescriptions, {
       excludeExtraneousValues: true,
@@ -127,7 +135,10 @@ export class PrescriptionsController {
       filename: normalizedFilename,
     };
 
-    const prescription = await this.prescriptionsService.update(id, updatePrescriptionDto);
+    const prescription = await this.prescriptionsService.update(
+      id,
+      updatePrescriptionDto,
+    );
     return plainToInstance(PrescriptionResponseDto, prescription, {
       excludeExtraneousValues: true,
     });

@@ -9,9 +9,7 @@ import { UsersController } from './users.controller';
  * Gère l'authentification et les profils utilisateurs (patients et praticiens)
  */
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([User]),
-  ],
+  imports: [TypeOrmModule.forFeature([User])],
   controllers: [UsersController],
   providers: [UsersService],
   exports: [UsersService, TypeOrmModule],

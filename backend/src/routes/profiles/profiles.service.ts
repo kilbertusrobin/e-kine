@@ -45,7 +45,10 @@ export class ProfilesService {
   /**
    * Met à jour un profil
    */
-  async update(id: string, updateProfileDto: UpdateProfileDto): Promise<Profile> {
+  async update(
+    id: string,
+    updateProfileDto: UpdateProfileDto,
+  ): Promise<Profile> {
     const profile = await this.findById(id);
 
     if (!profile) {
@@ -65,7 +68,10 @@ export class ProfilesService {
   /**
    * Met à jour un profil par userId
    */
-  async updateByUserId(userId: string, updateProfileDto: UpdateProfileDto): Promise<Profile> {
+  async updateByUserId(
+    userId: string,
+    updateProfileDto: UpdateProfileDto,
+  ): Promise<Profile> {
     const profile = await this.findByUserId(userId);
 
     if (!profile) {

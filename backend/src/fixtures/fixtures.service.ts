@@ -31,7 +31,9 @@ export class FixturesService implements OnApplicationBootstrap {
     const careTypeMap = new Map<string, CareType>();
 
     for (const ct of careTypesFixture) {
-      let existing = await this.careTypeRepo.findOne({ where: { label: ct.label } });
+      let existing = await this.careTypeRepo.findOne({
+        where: { label: ct.label },
+      });
       if (!existing) {
         existing = this.careTypeRepo.create(ct);
         existing = await this.careTypeRepo.save(existing);

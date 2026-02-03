@@ -1,4 +1,11 @@
-import { IsEmail, IsEnum, IsNotEmpty, IsString, IsUrl, IsOptional } from 'class-validator';
+import {
+  IsEmail,
+  IsEnum,
+  IsNotEmpty,
+  IsString,
+  IsUrl,
+  IsOptional,
+} from 'class-validator';
 import { UserRole } from '../enums/user-role.enum';
 
 /**
@@ -9,8 +16,8 @@ export class CreateUserDto {
   /**
    * Email de l'utilisateur (provenant de Google)
    */
-  @IsEmail({}, { message: 'L\'email doit être valide' })
-  @IsNotEmpty({ message: 'L\'email est obligatoire' })
+  @IsEmail({}, { message: "L'email doit être valide" })
+  @IsNotEmpty({ message: "L'email est obligatoire" })
   email: string;
 
   /**
@@ -23,14 +30,16 @@ export class CreateUserDto {
   /**
    * URL de la photo de profil Google (optionnel)
    */
-  @IsUrl({}, { message: 'L\'URL de la photo de profil doit être valide' })
+  @IsUrl({}, { message: "L'URL de la photo de profil doit être valide" })
   @IsOptional()
   googlePicture?: string;
 
   /**
    * Rôle de l'utilisateur (patient ou practitioner)
    */
-  @IsEnum(UserRole, { message: 'Le rôle doit être "patient" ou "practitioner"' })
+  @IsEnum(UserRole, {
+    message: 'Le rôle doit être "patient" ou "practitioner"',
+  })
   @IsNotEmpty({ message: 'Le rôle est obligatoire' })
   role: UserRole;
 }

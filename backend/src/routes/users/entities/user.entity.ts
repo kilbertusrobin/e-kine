@@ -45,7 +45,12 @@ export class User {
    * URL de la photo de profil Google
    * Peut être null si l'utilisateur n'a pas de photo
    */
-  @Column({ type: 'varchar', length: 500, nullable: true, name: 'google_picture' })
+  @Column({
+    type: 'varchar',
+    length: 500,
+    nullable: true,
+    name: 'google_picture',
+  })
   googlePicture: string | null;
 
   /**

@@ -11,10 +11,7 @@ import { MailModule } from '../mail/mail.module';
  * Module de gestion des rendez-vous
  */
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Appointment, User, Profile]),
-    MailModule,
-  ],
+  imports: [TypeOrmModule.forFeature([Appointment, User, Profile]), MailModule],
   controllers: [AppointmentsController],
   providers: [AppointmentsService],
   exports: [AppointmentsService],
