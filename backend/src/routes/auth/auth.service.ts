@@ -234,4 +234,34 @@ export class AuthService {
   async logoutAll(userId: string): Promise<void> {
     await this.sessionsService.deleteAllByUserId(userId);
   }
+
+  /**
+   * Connexion de développement par email (sans Google OAuth)
+   * À utiliser uniquement pour les tests
+   */
+  async devLogin(
+    email: string,
+    deviceInfo?: string,
+    ipAddress?: string,
+  ): Promise<AuthResponseDto> {
+    const user = await this.userRepository.findOne({
+      where: { email },
+      relations: ['profile'],
+    });
+
+    if (!user) {
+      throw new UnauthorizedException(`Utilisateur avec l'email ${email} non trouvé`);
+    }
+
+    if (!user.canLogin()) {
+      throw new ForbiddenException('Votre compte a été désactivé.');
+    }
+
+    // Met à jour la dernière connexion
+    await this.userRepository.update(user.id, {
+      lastLoginAt: new Date(),
+    });
+
+    return this.generateTokens(user, deviceInfo, ipAddress);
+  }
 }

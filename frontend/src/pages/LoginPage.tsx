@@ -1,10 +1,40 @@
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Header from '../components/Header'
 import PageTransition from '../components/PageTransition'
+import { setTokens } from '../services/api'
 
 export default function LoginPage() {
+  const navigate = useNavigate()
+  const [isDevLoading, setIsDevLoading] = useState(false)
+
   const handleGoogleLogin = () => {
     // Redirige vers l'endpoint Google OAuth du backend
     window.location.href = 'http://localhost:3001/auth/google'
+  }
+
+  const handleDevLogin = async () => {
+    setIsDevLoading(true)
+    try {
+      const response = await fetch('http://localhost:3001/auth/dev-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: 'marie-eugenie-la-celebre-kine@gmail.com' }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Connexion échouée')
+      }
+
+      const data = await response.json()
+      setTokens(data.accessToken, data.refreshToken)
+      navigate('/practitioner', { replace: true })
+    } catch (error) {
+      console.error('Erreur de connexion dev:', error)
+      alert('Erreur de connexion. Assurez-vous que les fixtures ont été chargées.')
+    } finally {
+      setIsDevLoading(false)
+    }
   }
 
   return (
@@ -38,6 +68,20 @@ export default function LoginPage() {
                     <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                   </svg>
                   <span className="font-semibold text-gray-700">Se connecter avec Google</span>
+                </button>
+
+                {/* Bouton de dev pour Marie-Eugénie */}
+                <button
+                  onClick={handleDevLogin}
+                  disabled={isDevLoading}
+                  className="w-full flex items-center justify-center space-x-3 px-4 py-3 border-2 border-purple-300 bg-purple-50 rounded-lg hover:bg-purple-100 hover:border-purple-500 transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                  </svg>
+                  <span className="font-semibold text-purple-700">
+                    {isDevLoading ? 'Connexion...' : 'Se connecter en tant que kiné (Marie-Eugénie)'}
+                  </span>
                 </button>
               </div>
             </div>

@@ -130,4 +130,19 @@ export class AuthController {
       canLogin: user.canLogin(),
     };
   }
+
+  @Post('dev-login')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Connexion de développement (tests uniquement)' })
+  @ApiBody({ schema: { properties: { email: { type: 'string' } } } })
+  @ApiResponse({ status: 200, description: 'Connexion réussie' })
+  @ApiResponse({ status: 401, description: 'Utilisateur non trouvé' })
+  async devLogin(
+    @Body('email') email: string,
+    @Req() req: Request,
+  ) {
+    const deviceInfo = req.headers['user-agent'];
+    const ipAddress = req.ip;
+    return this.authService.devLogin(email, deviceInfo, ipAddress);
+  }
 }

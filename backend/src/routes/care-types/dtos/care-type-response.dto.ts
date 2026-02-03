@@ -1,9 +1,9 @@
-import { Expose } from 'class-transformer';
-import { CareType } from '../entities/care-type.entity';
+import { Exclude, Expose } from 'class-transformer';
 
 /**
  * DTO de réponse pour un type de soin
  */
+@Exclude()
 export class CareTypeResponseDto {
   @Expose()
   id: string;
@@ -16,25 +16,4 @@ export class CareTypeResponseDto {
 
   @Expose()
   updatedAt: Date;
-
-  constructor(careType: CareType) {
-    this.id = careType.id;
-    this.label = careType.label;
-    this.createdAt = careType.createdAt;
-    this.updatedAt = careType.updatedAt;
-  }
-
-  /**
-   * Convertit une entité CareType en DTO de réponse
-   */
-  static fromEntity(careType: CareType): CareTypeResponseDto {
-    return new CareTypeResponseDto(careType);
-  }
-
-  /**
-   * Convertit un tableau d'entités CareType en tableau de DTOs
-   */
-  static fromEntities(careTypes: CareType[]): CareTypeResponseDto[] {
-    return careTypes.map((careType) => CareTypeResponseDto.fromEntity(careType));
-  }
 }

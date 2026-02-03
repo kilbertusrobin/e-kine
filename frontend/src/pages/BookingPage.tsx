@@ -39,13 +39,13 @@ export default function BookingPage() {
 
   // Filter care types by selected practitioner
   const filteredCareTypes = useMemo(() => {
-    if (!practitionerId) return careTypes
+    if (!practitionerId) return []
     const selectedPrac = practitioners.find(p => p.id === practitionerId)
     if (selectedPrac?.careTypes && selectedPrac.careTypes.length > 0) {
       return selectedPrac.careTypes
     }
-    return careTypes
-  }, [practitionerId, practitioners, careTypes])
+    return []
+  }, [practitionerId, practitioners])
 
   // Reset care type when practitioner changes
   useEffect(() => {

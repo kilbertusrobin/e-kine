@@ -11,6 +11,7 @@ import {
   ApiResponse,
   ApiBearerAuth,
 } from '@nestjs/swagger';
+import { plainToInstance } from 'class-transformer';
 import { CareTypesService } from './care-types.service';
 import { UpdateUserCareTypesDto, CareTypeResponseDto } from './dtos';
 import { JwtAuthGuard } from '../auth/guards';
@@ -27,7 +28,7 @@ export class CareTypesController {
   @ApiResponse({ status: 200, description: 'Liste des types de soins disponibles' })
   async findAll(): Promise<CareTypeResponseDto[]> {
     const careTypes = await this.careTypesService.findAll();
-    return CareTypeResponseDto.fromEntities(careTypes);
+    return plainToInstance(CareTypeResponseDto, careTypes, { excludeExtraneousValues: true });
   }
 
   @Get('me')
@@ -40,7 +41,7 @@ export class CareTypesController {
     @CurrentUser() user: User,
   ): Promise<CareTypeResponseDto[]> {
     const careTypes = await this.careTypesService.findByUserId(user.id);
-    return CareTypeResponseDto.fromEntities(careTypes);
+    return plainToInstance(CareTypeResponseDto, careTypes, { excludeExtraneousValues: true });
   }
 
   @Put('me')
@@ -57,6 +58,6 @@ export class CareTypesController {
       user.id,
       updateUserCareTypesDto.careTypeIds,
     );
-    return CareTypeResponseDto.fromEntities(careTypes);
+    return plainToInstance(CareTypeResponseDto, careTypes, { excludeExtraneousValues: true });
   }
 }

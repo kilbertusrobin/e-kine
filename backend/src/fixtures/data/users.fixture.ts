@@ -145,4 +145,23 @@ export const usersFixture = [
       'Massage thérapeutique',
     ],
   },
+  {
+    user: {
+      email: 'marie-eugenie-la-celebre-kine@gmail.com',
+      googleId: 'fake',
+      googlePicture: 'fake',
+      role: UserRole.PRACTITIONER,
+      isActive: true,
+      emailVerified: true,
+    },
+    profile: {
+      firstName: 'Marie-Eugénie',
+      lastName: 'Mechain',
+      address: '-',
+      city: '-',
+      pc: '-',
+      phone: 'fake',
+    },
+    careTypeLabels: [],
+  },
 ];

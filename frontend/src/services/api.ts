@@ -183,7 +183,9 @@ export const appointmentsApi = {
 export const usersApi = {
   getPractitioners: async (): Promise<User[]> => {
     try {
-      return await fetchWithAuth<User[]>('/users/practitioners')
+      const response = await fetch(`${API_URL}/users/practitioners`)
+      if (!response.ok) return []
+      return response.json() as Promise<User[]>
     } catch {
       return []
     }
