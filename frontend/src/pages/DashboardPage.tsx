@@ -140,7 +140,6 @@ export default function DashboardPage() {
           upcomingAppointments={upcomingAppointments}
           prescriptions={prescriptions}
           onOpenPrescriptionModal={() => setShowPrescriptionModal(true)}
-          onOpenProfileModal={() => setShowProfileModal(true)}
           onTabChange={(tab) => setActiveTab(tab)}
         />
       )}
@@ -198,7 +197,6 @@ function OverviewTab({
   upcomingAppointments,
   prescriptions,
   onOpenPrescriptionModal,
-  onOpenProfileModal,
   onTabChange,
 }: {
   user: User | null
@@ -207,7 +205,6 @@ function OverviewTab({
   upcomingAppointments: Appointment[]
   prescriptions: Prescription[]
   onOpenPrescriptionModal: () => void
-  onOpenProfileModal: () => void
   onTabChange: (tab: Tab) => void
 }) {
   const displayName = profile?.firstName || user?.email?.split('@')[0] || 'Patient'
@@ -503,40 +500,6 @@ function OverviewTab({
           </button>
         </div>
 
-      </div>
-    </div>
-  )
-}
-
-// =============================================================================
-// NEXT APPOINTMENT DISPLAY
-// =============================================================================
-
-function NextAppointmentDisplay({ appointment }: { appointment: Appointment }) {
-  const date = new Date(appointment.dateTime)
-  const dayName = date.toLocaleDateString('fr-FR', { weekday: 'long' })
-  const dayNum = date.getDate()
-  const time = date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
-
-  return (
-    <div className="flex items-center space-x-4">
-      <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-600 flex flex-col items-center justify-center text-white flex-shrink-0">
-        <span className="text-xl font-bold leading-none">{dayNum}</span>
-        <span className="text-[10px] uppercase tracking-wider mt-0.5 opacity-80">
-          {date.toLocaleDateString('fr-FR', { month: 'short' })}
-        </span>
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="font-semibold text-gray-900">{appointment.careType?.label || 'Consultation'}</p>
-        <p className="text-sm text-gray-500 capitalize">{dayName} a {time}</p>
-        {appointment.practitioner && (
-          <p className="text-xs text-gray-400 mt-0.5 truncate">{appointment.practitioner.email}</p>
-        )}
-      </div>
-      <div className="flex-shrink-0">
-        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700">
-          Confirme
-        </span>
       </div>
     </div>
   )
