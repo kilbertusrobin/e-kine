@@ -1,0 +1,69 @@
+@startuml
+
+skinparam backgroundColor #FEFEFE
+
+title Diagramme C4 - Niveau 3 : Composants\nAPI Backend E-Kine
+
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam RectangleBorderThickness 1
+skinparam RectangleRoundCorner 10
+
+' === EXTERNES ===
+
+rectangle "**Application Web**\n[React]" as frontend #A9D18E
+
+rectangle "**PostgreSQL**" as postgres #FFD966
+
+rectangle "**Google OAuth**" as google #D6DCE5
+
+rectangle "**SMTP**" as smtp #D6DCE5
+
+' === API BACKEND ===
+
+rectangle "API Backend (NestJS)" as backend #F2F2F2 {
+
+  rectangle "**AuthModule**\n\nGoogle OAuth + JWT" as auth #7FCDEE
+
+  rectangle "**AppointmentsModule**\n\nGestion RDV" as appointments #7FCDEE
+
+  rectangle "**ProfilesModule**\n\nProfils" as profiles #7FCDEE
+
+  rectangle "**PrescriptionsModule**\n\nOrdonnances" as prescriptions #7FCDEE
+
+  rectangle "**CareTypesModule**\n\nTypes de soins" as caretypes #7FCDEE
+
+  rectangle "**MailModule**\n\nEmails" as mail #C5B4E3
+
+  rectangle "**SchedulerModule**\n\nRappels J-1" as scheduler #C5B4E3
+
+}
+
+' === RELATIONS FRONTEND ===
+
+frontend --> auth
+frontend --> appointments
+frontend --> profiles
+frontend --> prescriptions
+frontend --> caretypes
+
+' === RELATIONS INTERNES ===
+
+appointments --> mail : "Notifications"
+scheduler --> mail : "Rappels"
+scheduler --> appointments
+
+' === RELATIONS EXTERNES ===
+
+auth --> google
+mail --> smtp
+
+' === RELATIONS BDD ===
+
+auth --> postgres
+appointments --> postgres
+profiles --> postgres
+prescriptions --> postgres
+caretypes --> postgres
+
+@enduml

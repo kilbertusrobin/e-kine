@@ -1,0 +1,46 @@
+@startuml
+
+skinparam backgroundColor #FEFEFE
+
+title Diagramme C4 - Niveau 2 : Conteneurs\nPlateforme E-Kine
+
+skinparam defaultFontSize 12
+skinparam shadowing false
+skinparam RectangleBorderThickness 1
+skinparam RectangleRoundCorner 10
+
+' === ACTEURS ===
+
+rectangle "**Patient**\n[Personne]" as patient #B4D7E8
+rectangle "**Kinesitherapeute**\n[Personne]" as kine #B4D7E8
+
+' === SYSTEME E-KINE ===
+
+rectangle "Plateforme E-Kine" as ekine #F2F2F2 {
+
+  rectangle "**Application Web**\n\n[React / Vite]\n\nInterface utilisateur" as frontend #A9D18E
+
+  rectangle "**API Backend**\n\n[NestJS / TypeScript]\n\nLogique metier" as backend #5B9BD5
+
+  rectangle "**Base de Donnees**\n\n[PostgreSQL]\n\nStockage" as postgres #FFD966
+
+}
+
+' === SYSTEMES EXTERNES ===
+
+rectangle "**Google OAuth 2.0**\n[Externe]" as google #D6DCE5
+
+rectangle "**Serveur SMTP**\n[Externe]" as smtp #D6DCE5
+
+' === RELATIONS ===
+
+patient --> frontend
+kine --> frontend
+
+frontend --> backend : "API REST"
+backend --> postgres : "TypeORM"
+
+backend --> google : "OAuth 2.0"
+backend --> smtp : "SMTP"
+
+@enduml

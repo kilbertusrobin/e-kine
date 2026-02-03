@@ -1,0 +1,36 @@
+@startuml
+
+skinparam backgroundColor #FEFEFE
+
+title Diagramme C4 - Niveau 1 : Contexte\nPlateforme E-Kine
+
+skinparam defaultFontSize 12
+skinparam shadowing false
+skinparam RectangleBorderThickness 1
+skinparam RectangleRoundCorner 10
+
+' === ACTEURS ===
+
+rectangle "**Patient**\n\n[Personne]\n\nPrendre rendez-vous\net gerer ses ordonnances" as patient #B4D7E8
+
+rectangle "**Kinesitherapeute**\n\n[Personne]\n\nGerer ses rendez-vous\net disponibilites" as kine #B4D7E8
+
+' === SYSTEME PRINCIPAL ===
+
+rectangle "**Plateforme E-Kine**\n\n[Systeme]\n\nPrise de rendez-vous en ligne\npour cabinet de kinesitherapie" as ekine #5B9BD5
+
+' === SYSTEMES EXTERNES ===
+
+rectangle "**Google OAuth 2.0**\n\n[Externe]\n\nAuthentification" as google #D6DCE5
+
+rectangle "**Serveur SMTP**\n\n[Externe]\n\nEmails" as smtp #D6DCE5
+
+' === RELATIONS ===
+
+patient --> ekine : "Utilise"
+kine --> ekine : "Utilise"
+
+ekine --> google : "Authentifie via"
+ekine --> smtp : "Envoie emails via"
+
+@enduml

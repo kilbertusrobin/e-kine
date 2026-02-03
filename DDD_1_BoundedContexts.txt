@@ -1,0 +1,66 @@
+@startuml
+
+skinparam backgroundColor #FEFEFE
+
+title Bounded Contexts - Plateforme E-Kine
+
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam RectangleBorderThickness 1
+skinparam RectangleRoundCorner 10
+
+' === BOUNDED CONTEXT : IDENTITE & ACCES ===
+
+rectangle "**Bounded Context**\n\nIDENTITE & ACCES" as BC1 #B4D7E8 {
+  rectangle "Entity\nUser" #5B9BD5
+  rectangle "Entity\nSession" #5B9BD5
+  rectangle "Value Object\nCredentials" #A9D18E
+  rectangle "Value Object\nRole" #A9D18E
+}
+
+' === BOUNDED CONTEXT : PROFILS ===
+
+rectangle "**Bounded Context**\n\nPROFILS" as BC2 #B4D7E8 {
+  rectangle "Entity\nProfile" #5B9BD5
+  rectangle "Value Object\nAdresse" #A9D18E
+  rectangle "Value Object\nContact" #A9D18E
+}
+
+' === BOUNDED CONTEXT : RENDEZ-VOUS (CORE DOMAIN) ===
+
+rectangle "**Bounded Context**\n\nRENDEZ-VOUS\n(Core Domain)" as BC3 #FFD966 {
+  rectangle "Aggregate Root\nAppointment" #F4B183
+  rectangle "Value Object\nCreneau" #A9D18E
+  rectangle "Value Object\nStatut" #A9D18E
+}
+
+' === BOUNDED CONTEXT : SOINS ===
+
+rectangle "**Bounded Context**\n\nSOINS" as BC4 #B4D7E8 {
+  rectangle "Entity\nCareType" #5B9BD5
+  rectangle "Value Object\nSpecialite" #A9D18E
+}
+
+' === BOUNDED CONTEXT : DOSSIER MEDICAL ===
+
+rectangle "**Bounded Context**\n\nDOSSIER MEDICAL" as BC5 #B4D7E8 {
+  rectangle "Entity\nPrescription" #5B9BD5
+  rectangle "Value Object\nDocument" #A9D18E
+}
+
+' === BOUNDED CONTEXT : NOTIFICATIONS ===
+
+rectangle "**Bounded Context**\n\nNOTIFICATIONS" as BC6 #C5B4E3 {
+  rectangle "Service\nMailService" #D6DCE5
+  rectangle "Service\nScheduler" #D6DCE5
+}
+
+' === RELATIONS ===
+
+BC3 --> BC2 : "Patient &\nPraticien"
+BC3 --> BC4 : "Type de soin"
+BC5 --> BC2 : "Patient"
+BC1 ..> BC2 : "Cree profil"
+BC6 ..> BC3 : "Rappels &\nConfirmations"
+
+@enduml
