@@ -38,6 +38,7 @@ lerna-debug.log*
 
 # Docker
 .docker/
+docker-compose.override.yml.bak
 
 # Misc
 .cache/

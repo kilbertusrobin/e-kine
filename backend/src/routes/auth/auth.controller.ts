@@ -18,10 +18,12 @@ import {
   ApiExcludeEndpoint,
 } from '@nestjs/swagger';
 import type { Request, Response } from 'express';
+import { plainToInstance } from 'class-transformer';
 import { AuthService } from './auth.service';
 import { GoogleAuthGuard, JwtAuthGuard } from './guards';
 import { CurrentUser } from './decorators';
 import { User } from '../users/entities/user.entity';
+import { UserResponseDto } from '../users/dtos';
 import { ConfigService } from '@nestjs/config';
 
 @ApiTags('Auth')
@@ -111,7 +113,9 @@ export class AuthController {
   @ApiResponse({ status: 200, description: 'Informations utilisateur' })
   @ApiResponse({ status: 401, description: 'Non authentifié' })
   async getProfile(@CurrentUser() user: User) {
-    return user;
+    return plainToInstance(UserResponseDto, user, {
+      excludeExtraneousValues: true,
+    });
   }
 
   @Get('status')

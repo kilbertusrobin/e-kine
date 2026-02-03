@@ -1,12 +1,20 @@
+import { Expose } from 'class-transformer';
 import { CareType } from '../entities/care-type.entity';
 
 /**
  * DTO de réponse pour un type de soin
  */
 export class CareTypeResponseDto {
+  @Expose()
   id: string;
+
+  @Expose()
   label: string;
+
+  @Expose()
   createdAt: Date;
+
+  @Expose()
   updatedAt: Date;
 
   constructor(careType: CareType) {

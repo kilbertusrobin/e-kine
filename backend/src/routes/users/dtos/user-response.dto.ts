@@ -1,6 +1,7 @@
 import { Exclude, Expose, Type } from 'class-transformer';
 import { UserRole } from '../enums/user-role.enum';
 import { ProfileResponseDto } from '../../profiles/dtos';
+import { CareTypeResponseDto } from '../../care-types/dtos';
 
 /**
  * DTO pour les réponses API contenant un utilisateur
@@ -70,26 +71,9 @@ export class UserResponseDto {
   profile?: ProfileResponseDto;
 
   /**
-   * Méthode helper pour vérifier si l'utilisateur est un patient
+   * Types de soins du praticien
    */
   @Expose()
-  get isPatient(): boolean {
-    return this.role === UserRole.PATIENT;
-  }
-
-  /**
-   * Méthode helper pour vérifier si l'utilisateur est un praticien
-   */
-  @Expose()
-  get isPractitioner(): boolean {
-    return this.role === UserRole.PRACTITIONER;
-  }
-
-  /**
-   * Méthode helper pour vérifier si le compte peut se connecter
-   */
-  @Expose()
-  get canLogin(): boolean {
-    return this.isActive;
-  }
+  @Type(() => CareTypeResponseDto)
+  careTypes?: CareTypeResponseDto[];
 }
