@@ -30,7 +30,13 @@ describe('MailService', () => {
     patientId: 'patient-uuid',
     dateTime: new Date('2025-01-20T09:00:00.000Z'),
     status: AppointmentStatus.CONFIRMED,
-    careType: { id: 'care-type-1', label: 'Kinésithérapie', practitioners: [] },
+    careType: {
+      id: 'care-type-1',
+      label: 'Kinésithérapie',
+      practitioners: [],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
     notes: 'Première consultation',
   };
 
